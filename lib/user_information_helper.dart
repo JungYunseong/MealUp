@@ -76,7 +76,7 @@ class UIHelper {
 
   UserInformation getInformation() {
     UserInformation userInformation = UserInformation.fromJson(
-      jsonDecode(prefs.getString('UserInformation') ?? ''),
+      jsonDecode(prefs.getString('UserInformation') ?? '{}'),
     );
 
     return userInformation;
@@ -104,7 +104,7 @@ class UIHelper {
 
   GoalCalories getCalories() {
     GoalCalories goalCalories = GoalCalories.fromJson(
-      jsonDecode(prefs.getString('GoalCalories') ?? ''),
+      jsonDecode(prefs.getString('GoalCalories') ?? '{}'),
     );
 
     return goalCalories;
