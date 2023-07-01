@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:meal_up/components/target_intake_row.dart';
 import 'package:meal_up/model/chart_data.dart';
 import 'package:meal_up/model/nutrition.dart';
+import 'package:meal_up/screens/edit_goal_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
@@ -114,6 +115,7 @@ class _TargetIntakeState extends State<TargetIntake> {
                     ),
                   ),
                   onPressed: () {
+                    Navigator.pushNamed(context, EditGoalScreen.routeName);
                     print('편집');
                   },
                 )

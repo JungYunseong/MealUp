@@ -9,10 +9,12 @@ class TargetIntakeRow extends StatefulWidget {
     super.key,
     required this.nutrition,
     required this.currentIntake,
+    this.isEditScreen = false,
   });
 
   final Nutrition nutrition;
   final int currentIntake;
+  final bool isEditScreen;
 
   @override
   State<TargetIntakeRow> createState() => _TargetIntakeRowState();
@@ -39,7 +41,7 @@ class _TargetIntakeRowState extends State<TargetIntakeRow> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 6.0),
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -81,17 +83,18 @@ class _TargetIntakeRowState extends State<TargetIntakeRow> {
               letterSpacing: 0.20,
             ),
           ),
-          Text(
-            '${(widget.currentIntake / goalIntake * 100).round()}%',
-            textAlign: TextAlign.right,
-            style: const TextStyle(
-              color: Color(0xFF2D3142),
-              fontSize: 16,
-              fontFamily: 'Rubik',
-              fontWeight: FontWeight.w500,
-              letterSpacing: 0.20,
+          if (!widget.isEditScreen)
+            Text(
+              '${(widget.currentIntake / goalIntake * 100).round()}%',
+              textAlign: TextAlign.right,
+              style: const TextStyle(
+                color: Color(0xFF2D3142),
+                fontSize: 16,
+                fontFamily: 'Rubik',
+                fontWeight: FontWeight.w500,
+                letterSpacing: 0.20,
+              ),
             ),
-          ),
         ],
       ),
     );
