@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 
 import '../providers/setting_provider.dart';
 
-class TargetIntakeRow extends StatelessWidget {
+class TargetIntakeRow extends StatefulWidget {
   const TargetIntakeRow({
     super.key,
     required this.nutrition,
@@ -13,6 +13,28 @@ class TargetIntakeRow extends StatelessWidget {
 
   final Nutrition nutrition;
   final int currentIntake;
+
+  @override
+  State<TargetIntakeRow> createState() => _TargetIntakeRowState();
+}
+
+class _TargetIntakeRowState extends State<TargetIntakeRow> {
+  int goalIntake = 1;
+
+  @override
+  void initState() {
+    setState(() {
+      switch (widget.nutrition) {
+        case Nutrition.carbohydrate:
+          goalIntake = context.read<Setting>().goalCarbohydrate!;
+        case Nutrition.protein:
+          goalIntake = context.read<Setting>().goalProtein!;
+        case Nutrition.fat:
+          goalIntake = context.read<Setting>().goalFat!;
+      }
+    });
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +51,7 @@ class TargetIntakeRow extends StatelessWidget {
                   width: 13.95,
                   height: 16,
                   decoration: ShapeDecoration(
-                    color: nutrition.getColor,
+                    color: widget.nutrition.getColor,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(4),
                     ),
@@ -37,7 +59,7 @@ class TargetIntakeRow extends StatelessWidget {
                 ),
                 const SizedBox(width: 16.0),
                 Text(
-                  nutrition.convertToString,
+                  widget.nutrition.convertToString,
                   style: const TextStyle(
                     color: Color(0xFF2D3142),
                     fontSize: 16,
@@ -50,7 +72,7 @@ class TargetIntakeRow extends StatelessWidget {
             ),
           ),
           Text(
-            '${currentIntake.toString()}g',
+            '${widget.currentIntake.toString()}g',
             style: const TextStyle(
               color: Color(0xFF2D3142),
               fontSize: 16,
@@ -60,7 +82,7 @@ class TargetIntakeRow extends StatelessWidget {
             ),
           ),
           Text(
-            '${(currentIntake / context.read<Setting>().goalCarbohydrate! * 100).round()}%',
+            '${(widget.currentIntake / goalIntake * 100).round()}%',
             textAlign: TextAlign.right,
             style: const TextStyle(
               color: Color(0xFF2D3142),

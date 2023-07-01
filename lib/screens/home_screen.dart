@@ -17,7 +17,7 @@ class _HomeScreenState extends State<HomeScreen> {
   bool isLoading = false;
 
   DateTime startDate = DateTime.now();
-  DateTime _selectedValue = DateTime.now();
+  DateTime _selectedDate = DateTime.now();
 
   @override
   void initState() {
@@ -43,7 +43,7 @@ class _HomeScreenState extends State<HomeScreen> {
           initialSelectedDate: DateTime.now(),
           onDateChange: (date) {
             setState(() {
-              _selectedValue = date;
+              _selectedDate = date;
             });
           },
         ),
@@ -62,7 +62,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 shrinkWrap: true,
                 children: [
                   const SizedBox(height: 27.0),
-                  TargetIntake(selectedValue: _selectedValue),
+                  TargetIntake(selectedValue: _selectedDate),
+                  const SizedBox(height: 16.0),
                   const SizedBox(height: 550),
                 ],
               ),

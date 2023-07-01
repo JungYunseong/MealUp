@@ -4,7 +4,10 @@ import 'package:intl/intl.dart';
 import 'package:meal_up/components/target_intake_row.dart';
 import 'package:meal_up/model/chart_data.dart';
 import 'package:meal_up/model/nutrition.dart';
+import 'package:provider/provider.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
+
+import '../providers/setting_provider.dart';
 
 class TargetIntake extends StatefulWidget {
   const TargetIntake({
@@ -19,6 +22,32 @@ class TargetIntake extends StatefulWidget {
 }
 
 class _TargetIntakeState extends State<TargetIntake> {
+  int carbIntake = 100;
+  int proteinIntake = 90;
+  int fatIntake = 40;
+  int totalPercent = 0;
+
+  @override
+  void initState() {
+    final carbPercent =
+        (carbIntake / context.read<Setting>().goalCarbohydrate! * 100) >= 100
+            ? 100
+            : (carbIntake / context.read<Setting>().goalCarbohydrate! * 100);
+    final proteinPercent =
+        (proteinIntake / context.read<Setting>().goalProtein! * 100) >= 100
+            ? 100
+            : (proteinIntake / context.read<Setting>().goalProtein! * 100);
+    final fatPercent =
+        (fatIntake / context.read<Setting>().goalFat! * 100) >= 100
+            ? 100
+            : (fatIntake / context.read<Setting>().goalFat! * 100);
+
+    setState(() {
+      totalPercent = ((carbPercent + proteinPercent + fatPercent) / 3).round();
+    });
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -95,19 +124,19 @@ class _TargetIntakeState extends State<TargetIntake> {
               alignment: Alignment.center,
               children: [
                 SfCircularChart(series: _getRadialBarCustomizedSeries()),
-                const Column(
+                Column(
                   children: [
                     Text(
-                      '40%',
+                      totalPercent.toString(),
                       textAlign: TextAlign.center,
-                      style: TextStyle(
+                      style: const TextStyle(
                         color: Color(0xFF2D3142),
                         fontSize: 32,
                         fontFamily: 'Rubik',
                         fontWeight: FontWeight.w500,
                       ),
                     ),
-                    Text(
+                    const Text(
                       'of daily goals',
                       textAlign: TextAlign.center,
                       style: TextStyle(
@@ -122,17 +151,17 @@ class _TargetIntakeState extends State<TargetIntake> {
                 ),
               ],
             ),
-            const TargetIntakeRow(
+            TargetIntakeRow(
               nutrition: Nutrition.carbohydrate,
-              currentIntake: 100,
+              currentIntake: carbIntake,
             ),
-            const TargetIntakeRow(
+            TargetIntakeRow(
               nutrition: Nutrition.protein,
-              currentIntake: 80,
+              currentIntake: proteinIntake,
             ),
-            const TargetIntakeRow(
+            TargetIntakeRow(
               nutrition: Nutrition.fat,
-              currentIntake: 100,
+              currentIntake: fatIntake,
             ),
           ],
         ),
