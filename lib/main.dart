@@ -1,12 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:meal_up/constant.dart';
+import 'package:meal_up/providers/setting_provider.dart';
 import 'package:meal_up/routes.dart';
 import 'package:meal_up/screens/tab_screen.dart';
 import 'package:meal_up/screens/onboarding/onboarding_screen.dart';
 import 'package:meal_up/user_information_helper.dart';
+import 'package:provider/provider.dart';
 
 void main() {
-  runApp(const MyApp());
+  final providers = [
+    ChangeNotifierProvider(create: (_) => Setting()),
+  ];
+
+  runApp(MultiProvider(
+    providers: providers,
+    child: const MyApp(),
+  ));
 }
 
 class MyApp extends StatelessWidget {

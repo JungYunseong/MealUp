@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../components/date_picker/date_picker_widget.dart';
+import '../components/target_intake_card.dart';
 import '../constant.dart';
 import '../utils/app_install_date.dart';
 
@@ -47,20 +48,25 @@ class _HomeScreenState extends State<HomeScreen> {
           },
         ),
         const SizedBox(height: 24.0),
-        Container(
-          decoration: const BoxDecoration(
-            borderRadius: BorderRadius.vertical(
-              top: Radius.circular(30.0),
+        Expanded(
+          child: Container(
+            decoration: const BoxDecoration(
+              borderRadius: BorderRadius.vertical(
+                top: Radius.circular(30.0),
+              ),
+              color: Color(0xFFF4F6FA),
             ),
-            color: Color(0xFFF4F6FA),
-          ),
-          child: ListView(
-            shrinkWrap: true,
-            children: [
-              const SizedBox(height: 24.0),
-              Text(_selectedValue.toString()),
-              const SizedBox(height: 550),
-            ],
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24.0),
+              child: ListView(
+                shrinkWrap: true,
+                children: [
+                  const SizedBox(height: 27.0),
+                  TargetIntake(selectedValue: _selectedValue),
+                  const SizedBox(height: 550),
+                ],
+              ),
+            ),
           ),
         )
       ],

@@ -59,15 +59,18 @@ class DateWidget extends StatelessWidget {
                 ),
               ),
               Container(
+                width: 34.0,
                 decoration: BoxDecoration(
                   borderRadius: const BorderRadius.all(Radius.circular(30.0)),
                   color: selectionDateColor,
                 ),
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text(
-                    date.day.toString(), // Date
-                    style: dateTextStyle,
+                child: Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(
+                      date.day.toString(), // Date
+                      style: dateTextStyle,
+                    ),
                   ),
                 ),
               ),
