@@ -128,9 +128,9 @@ class _IntakedFoodBoxState extends State<IntakedFoodBox> {
                           ),
                         ),
                       ),
-                      onPressed: () {
+                      onPressed: () async {
                         print('식단 추가');
-                      })
+                      }),
                 ],
               ),
               const SizedBox(height: 8.0),
@@ -147,11 +147,11 @@ class _IntakedFoodBoxState extends State<IntakedFoodBox> {
                   }).toList(),
                 )
               else
-                const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 8.0),
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8.0),
                   child: Text(
-                    '식단을 등록해 주세요',
-                    style: TextStyle(
+                    '${widget.mealTime}에 섭취한 식단을 등록해 주세요',
+                    style: const TextStyle(
                       color: Color(0xFF9C9DB9),
                       fontSize: 14,
                       fontFamily: 'Noto Sans KR',
