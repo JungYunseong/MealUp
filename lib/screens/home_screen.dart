@@ -1,14 +1,14 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import '../components/date_picker/date_picker_widget.dart';
 import '../components/intaked_food_box.dart';
 import '../components/target_intake_card.dart';
 import '../constant.dart';
 import '../model/food_item.dart';
-import '../utils/app_install_date.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+  const HomeScreen({super.key, required this.installDate});
+
+  final DateTime installDate;
 
   static String routeName = '/home_screen';
 
@@ -17,9 +17,6 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  bool isLoading = true;
-
-  DateTime startDate = DateTime.now();
   DateTime _selectedDate = DateTime.now();
 
   final List<FoodItem> breakfast = [
@@ -59,13 +56,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   void initState() {
-    AppInstallDate().installDate.then((DateTime dateTime) {
-      setState(() {
-        startDate = dateTime;
-        isLoading = false;
-      });
-    });
-
     final (carb, protein, fat) = calculateIntake();
     setState(() {
       carbIntake = carb;
@@ -78,10 +68,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    if (isLoading) {
-      return const CircularProgressIndicator();
-    }
-    
     return Column(
       children: [
         Text(
@@ -90,7 +76,7 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         const SizedBox(height: 16.0),
         DatePicker(
-          startDate,
+          widget.installDate,
           initialSelectedDate: DateTime.now(),
           onDateChange: (date) {
             setState(() {

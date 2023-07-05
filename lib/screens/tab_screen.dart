@@ -3,6 +3,7 @@ import 'package:meal_up/constant.dart';
 import 'package:provider/provider.dart';
 import '../components/bottom_navigation_bar/bottom_navigation_bar.dart';
 import '../providers/setting_provider.dart';
+import '../utils/app_install_date.dart';
 import 'home_screen.dart';
 
 class TabScreen extends StatefulWidget {
@@ -19,11 +20,19 @@ class _TabScreenState extends State<TabScreen> {
 
   int selectedTab = 0;
 
+  DateTime installDate = DateTime.now();
+
   @override
   void initState() {
-    context.read<Setting>().getSettingValue().then((_) {
-      setState(() => isLoading = false);
+    AppInstallDate().installDate.then((DateTime dateTime) {
+      context.read<Setting>().getSettingValue().then((_) {
+        setState(() {
+          installDate = dateTime;
+          isLoading = false;
+        });
+      });
     });
+
     super.initState();
   }
 
@@ -40,7 +49,7 @@ class _TabScreenState extends State<TabScreen> {
             bottom: false,
             child: Stack(
               children: [
-                if (selectedTab == 0) const HomeScreen(),
+                if (selectedTab == 0) HomeScreen(installDate: installDate),
                 Align(
                   alignment: Alignment.bottomCenter,
                   child: CurvedNavigationBar(
