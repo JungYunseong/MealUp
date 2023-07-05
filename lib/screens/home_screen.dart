@@ -17,7 +17,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  bool isLoading = false;
+  bool isLoading = true;
 
   DateTime startDate = DateTime.now();
   DateTime _selectedDate = DateTime.now();
@@ -60,7 +60,10 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     AppInstallDate().installDate.then((DateTime dateTime) {
-      setState(() => startDate = dateTime);
+      setState(() {
+        startDate = dateTime;
+        isLoading = false;
+      });
     });
 
     final (carb, protein, fat) = calculateIntake();
@@ -75,6 +78,10 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    if (isLoading) {
+      return const CircularProgressIndicator();
+    }
+    
     return Column(
       children: [
         Text(
@@ -105,7 +112,7 @@ class _HomeScreenState extends State<HomeScreen> {
               children: [
                 const SizedBox(height: 27.0),
                 TargetIntake(
-                  selectedValue: _selectedDate,
+                  selectedDate: _selectedDate,
                   carbIntake: carbIntake,
                   proteinIntake: proteinIntake,
                   fatIntake: fatIntake,

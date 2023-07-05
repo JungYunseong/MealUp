@@ -13,13 +13,13 @@ import '../providers/setting_provider.dart';
 class TargetIntake extends StatefulWidget {
   const TargetIntake({
     super.key,
-    required this.selectedValue,
+    required this.selectedDate,
     required this.carbIntake,
     required this.proteinIntake,
     required this.fatIntake,
   });
 
-  final DateTime selectedValue;
+  final DateTime selectedDate;
   final int carbIntake;
   final int proteinIntake;
   final int fatIntake;
@@ -101,7 +101,7 @@ class _TargetIntakeState extends State<TargetIntake> {
                       ),
                       Text(
                         DateFormat('yyyy년 MM월 dd일').format(
-                          widget.selectedValue,
+                          widget.selectedDate,
                         ),
                         style: const TextStyle(
                           color: Color(0xFF2D3142),

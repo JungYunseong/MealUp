@@ -48,6 +48,19 @@ class DatePickerState extends State<DatePicker> {
   late final TextStyle deactivatedDateStyle;
   late final TextStyle deactivatedDayStyle;
 
+  Future<void> scrollToSelectedItem() async {
+    await Future.delayed(const Duration(milliseconds: 1));
+    final index = DateTime.now().difference(widget.startDate).inDays + 1;
+    _controller
+        .animateTo(
+          _controller.position.maxScrollExtent *
+              ((index - 2) / widget.daysCount),
+          duration: const Duration(milliseconds: 500),
+          curve: Curves.easeInOut,
+        )
+        .then((_) {});
+  }
+
   @override
   void initState() {
     initializeDateFormatting(widget.locale, null);
@@ -61,6 +74,8 @@ class DatePickerState extends State<DatePicker> {
         widget.dateTextStyle.copyWith(color: widget.deactivatedColor);
     deactivatedDayStyle =
         widget.dayTextStyle.copyWith(color: widget.deactivatedColor);
+
+    scrollToSelectedItem();
 
     super.initState();
   }
