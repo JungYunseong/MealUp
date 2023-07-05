@@ -1,7 +1,10 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import '../components/date_picker/date_picker_widget.dart';
+import '../components/intaked_food_box.dart';
 import '../components/target_intake_card.dart';
 import '../constant.dart';
+import '../model/food_item.dart';
 import '../utils/app_install_date.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -19,13 +22,54 @@ class _HomeScreenState extends State<HomeScreen> {
   DateTime startDate = DateTime.now();
   DateTime _selectedDate = DateTime.now();
 
+  final List<FoodItem> breakfast = [
+    FoodItem(
+        name: 'Salad with wheat and white egg', carb: 15, protein: 20, fat: 4),
+    FoodItem(name: 'Pumpkin soup', carb: 12, protein: 32, fat: 8),
+  ];
+  final List<FoodItem> launch = [];
+  final List<FoodItem> dinner = [];
+
+  int carbIntake = 0;
+  int proteinIntake = 0;
+  int fatIntake = 0;
+
+  (int, int, int) calculateIntake() {
+    int carb = 0;
+    int protein = 0;
+    int fat = 0;
+    for (FoodItem item in breakfast) {
+      carb = carb + item.carb;
+      protein = protein + item.protein;
+      fat = fat + item.fat;
+    }
+    for (FoodItem item in launch) {
+      carb = carb + item.carb;
+      protein = protein + item.protein;
+      fat = fat + item.fat;
+    }
+    for (FoodItem item in dinner) {
+      carb = carb + item.carb;
+      protein = protein + item.protein;
+      fat = fat + item.fat;
+    }
+
+    return (carb, protein, fat);
+  }
+
   @override
   void initState() {
     AppInstallDate().installDate.then((DateTime dateTime) {
-      setState(() {
-        startDate = dateTime;
-      });
+      setState(() => startDate = dateTime);
     });
+
+    final (carb, protein, fat) = calculateIntake();
+    setState(() {
+      carbIntake = carb;
+      proteinIntake = protein;
+      fatIntake = fat;
+    });
+
     super.initState();
   }
 
@@ -56,20 +100,36 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               color: Color(0xFFF4F6FA),
             ),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24.0),
-              child: ListView(
-                shrinkWrap: true,
-                children: [
-                  const SizedBox(height: 27.0),
-                  TargetIntake(selectedValue: _selectedDate),
-                  const SizedBox(height: 16.0),
-                  const SizedBox(height: 550),
-                ],
-              ),
+            child: ListView(
+              shrinkWrap: true,
+              children: [
+                const SizedBox(height: 27.0),
+                TargetIntake(
+                  selectedValue: _selectedDate,
+                  carbIntake: carbIntake,
+                  proteinIntake: proteinIntake,
+                  fatIntake: fatIntake,
+                ),
+                const SizedBox(height: 16.0),
+                IntakedFoodBox(
+                  mealTime: '아침',
+                  foodList: breakfast,
+                ),
+                const SizedBox(height: 16.0),
+                IntakedFoodBox(
+                  mealTime: '점심',
+                  foodList: launch,
+                ),
+                const SizedBox(height: 16.0),
+                IntakedFoodBox(
+                  mealTime: '저녁',
+                  foodList: dinner,
+                ),
+                const SizedBox(height: 550),
+              ],
             ),
           ),
-        )
+        ),
       ],
     );
   }
