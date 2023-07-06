@@ -118,7 +118,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   mealTime: '저녁',
                   foodList: dinner,
                 ),
-                const SizedBox(height: 550),
+                const SizedBox(height: 100.0),
               ],
             ),
           ),

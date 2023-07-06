@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:meal_up/components/food_row.dart';
 import 'package:meal_up/model/food_item.dart';
+import 'package:meal_up/screens/add_food_screen.dart';
 
 class IntakedFoodBox extends StatefulWidget {
   const IntakedFoodBox({
@@ -129,7 +130,7 @@ class _IntakedFoodBoxState extends State<IntakedFoodBox> {
                         ),
                       ),
                       onPressed: () async {
-                        print('식단 추가');
+                        Navigator.pushNamed(context, AddFoodScreen.routeName);
                       }),
                 ],
               ),
