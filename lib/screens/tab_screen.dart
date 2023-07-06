@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:meal_up/constant.dart';
+import 'package:meal_up/screens/recent_status_screen.dart';
 import 'package:provider/provider.dart';
 import '../components/bottom_navigation_bar/bottom_navigation_bar.dart';
 import '../providers/setting_provider.dart';
@@ -50,6 +51,7 @@ class _TabScreenState extends State<TabScreen> {
             child: Stack(
               children: [
                 if (selectedTab == 0) HomeScreen(installDate: installDate),
+                if (selectedTab == 1) const RecentStatusScreen(),
                 Align(
                   alignment: Alignment.bottomCenter,
                   child: CurvedNavigationBar(
