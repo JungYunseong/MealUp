@@ -13,8 +13,8 @@ var backgroundGradient = const BoxDecoration(
     begin: Alignment.topCenter,
     end: Alignment.bottomCenter,
     colors: [
-      Color(0xFFF0F5FF),
-      Color(0xFFFFFFFF),
+      Color(0xFFF4F6FA),
+      Colors.white,
     ],
   ),
 );

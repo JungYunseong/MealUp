@@ -1,34 +1,43 @@
-import 'package:flutter/cupertino.dart';
 import 'food_item.dart';
 
 class Intakes {
+  int id;
+  String date;
+  List<FoodItem> breakfast;
+  List<FoodItem> lunch;
+  List<FoodItem> dinner;
+
   Intakes({
     required this.id,
     required this.date,
-    required this.breakfast,
-    required this.launch,
-    required this.dinner,
+    this.breakfast = const [],
+    this.lunch = const [],
+    this.dinner = const [],
   });
 
-  late final Key id;
-  late final String date;
-  late final List<FoodItem> breakfast;
-  late final List<FoodItem> launch;
-  late final List<FoodItem> dinner;
-  
-  Intakes.fromJson(Map<String, dynamic> json){
-    date = json['date'];
-    breakfast = List.from(json['breakfast']).map((e) => FoodItem.fromJson(e)).toList();
-    launch = List.from(json['launch']).map((e) => FoodItem.fromJson(e)).toList();
-    dinner = List.from(json['dinner']).map((e) => FoodItem.fromJson(e)).toList();
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'date': date,
+      'breakfast': breakfast.map((food) => food.toMap()).toList(),
+      'lunch': lunch.map((food) => food.toMap()).toList(),
+      'dinner': dinner.map((food) => food.toMap()).toList(),
+    };
   }
 
-  Map<String, dynamic> toJson() {
-    final data = <String, dynamic>{};
-    data['date'] = date;
-    data['breakfast'] = breakfast.map((e) => e.toJson()).toList();
-    data['launch'] = launch.map((e) => e.toJson()).toList();
-    data['dinner'] = dinner.map((e) => e.toJson()).toList();
-    return data;
+  static Intakes fromMap(Map<String, dynamic> map) {
+    return Intakes(
+      id: map['id'],
+      date: map['date'],
+      breakfast: List<FoodItem>.from(
+        map['breakfast'].map((food) => FoodItem.fromMap(food)),
+      ),
+      lunch: List<FoodItem>.from(
+        map['lunch'].map((food) => FoodItem.fromMap(food)),
+      ),
+      dinner: List<FoodItem>.from(
+        map['dinner'].map((food) => FoodItem.fromMap(food)),
+      ),
+    );
   }
 }

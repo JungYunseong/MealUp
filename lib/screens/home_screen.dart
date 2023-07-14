@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import '../components/date_picker/date_picker_widget.dart';
 import '../components/intaked_food_box.dart';
 import '../components/target_intake_card.dart';
 import '../constant.dart';
+import '../database_helper.dart';
 import '../model/food_item.dart';
+import '../model/intakes.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key, required this.installDate});
@@ -19,17 +22,19 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   DateTime _selectedDate = DateTime.now();
 
-  final List<FoodItem> breakfast = [
-    FoodItem(
-        name: 'Salad with wheat and white egg', carb: 15, protein: 20, fat: 4),
-    FoodItem(name: 'Pumpkin soup', carb: 12, protein: 32, fat: 8),
-  ];
-  final List<FoodItem> launch = [];
-  final List<FoodItem> dinner = [];
+  List<FoodItem> breakfast = [];
+  List<FoodItem> lunch = [];
+  List<FoodItem> dinner = [];
 
   int carbIntake = 0;
   int proteinIntake = 0;
   int fatIntake = 0;
+
+  Future<Intakes?> getIntake(int intakeId) async {
+    final dbHelper = DatabaseHelper.instance;
+    final retrievedIntakes = await dbHelper.getIntake(intakeId);
+    return retrievedIntakes;
+  }
 
   (int, int, int) calculateIntake() {
     int carb = 0;
@@ -40,7 +45,7 @@ class _HomeScreenState extends State<HomeScreen> {
       protein = protein + item.protein;
       fat = fat + item.fat;
     }
-    for (FoodItem item in launch) {
+    for (FoodItem item in lunch) {
       carb = carb + item.carb;
       protein = protein + item.protein;
       fat = fat + item.fat;
@@ -54,15 +59,33 @@ class _HomeScreenState extends State<HomeScreen> {
     return (carb, protein, fat);
   }
 
-  @override
-  void initState() {
+  Future<void> fetchIntakes(DateTime date) async {
+    final dateFormat = DateFormat('yyyyMMdd');
+    final formattedDate = dateFormat.format(date);
+    final id = int.parse(formattedDate);
+    final retrieveIntake = await getIntake(id);
+
+    setState(() {
+      breakfast = retrieveIntake?.breakfast ?? [];
+      lunch = retrieveIntake?.lunch ?? [];
+      dinner = retrieveIntake?.dinner ?? [];
+    });
+    
+    fetchNutrition();
+  }
+
+  void fetchNutrition() {
     final (carb, protein, fat) = calculateIntake();
     setState(() {
       carbIntake = carb;
       proteinIntake = protein;
       fatIntake = fat;
     });
+  }
 
+  @override
+  void initState() {
+    fetchNutrition();
     super.initState();
   }
 
@@ -79,6 +102,7 @@ class _HomeScreenState extends State<HomeScreen> {
           widget.installDate,
           initialSelectedDate: DateTime.now(),
           onDateChange: (date) {
+            fetchIntakes(date);
             setState(() {
               _selectedDate = date;
             });
@@ -111,7 +135,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 const SizedBox(height: 16.0),
                 IntakedFoodBox(
                   mealTime: '점심',
-                  foodList: launch,
+                  foodList: lunch,
                 ),
                 const SizedBox(height: 16.0),
                 IntakedFoodBox(

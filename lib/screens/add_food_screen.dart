@@ -1,11 +1,23 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import '../constant.dart';
+import '../database_helper.dart';
+import '../model/food_item.dart';
+import '../model/intakes.dart';
 
-class AddFoodScreen extends StatelessWidget {
+class AddFoodScreen extends StatefulWidget {
   const AddFoodScreen({super.key});
 
   static String routeName = '/add_food_screen';
+
+  @override
+  State<AddFoodScreen> createState() => _AddFoodScreenState();
+}
+
+class _AddFoodScreenState extends State<AddFoodScreen> {
+  String _scanBarcode = 'Unknown';
 
   @override
   Widget build(BuildContext context) {
@@ -65,9 +77,7 @@ class AddFoodScreen extends StatelessWidget {
                             contentPadding: const EdgeInsets.all(20.0),
                             suffixIcon: CupertinoButton(
                                 child: const Icon(CupertinoIcons.search),
-                                onPressed: () {
-                                  
-                                }),
+                                onPressed: () {}),
                           ),
                         ),
                       ),
@@ -80,7 +90,10 @@ class AddFoodScreen extends StatelessWidget {
                             padding: const EdgeInsets.symmetric(vertical: 17.0),
                             color: primaryColor,
                             borderRadius: BorderRadius.circular(16.0),
-                            onPressed: () {},
+                            onPressed: () async {
+                              await barcodeScan();
+                              print(_scanBarcode);
+                            },
                             child: Text(
                               '바코드 스캔',
                               style: buttonText,
@@ -110,5 +123,103 @@ class AddFoodScreen extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Future<void> barcodeScan() async {
+    String barcodeScanRes;
+    try {
+      barcodeScanRes = await FlutterBarcodeScanner.scanBarcode(
+          '#ff6666', 'Cancel', true, ScanMode.BARCODE);
+      print(barcodeScanRes);
+    } on PlatformException {
+      barcodeScanRes = 'Failed to get platform version.';
+    }
+    if (!mounted) return;
+    setState(() {
+      _scanBarcode = barcodeScanRes;
+    });
+  }
+
+
+// Create a new Intakes object
+  final intakes = Intakes(
+    id: 20230714,
+    date: '2023-07-14',
+    breakfast: [
+      FoodItem(
+          thumbnail: null,
+          type: 'breakfast',
+          name: 'Toast',
+          carb: 20,
+          protein: 5,
+          fat: 10),
+      FoodItem(
+          thumbnail: null,
+          type: 'breakfast',
+          name: 'Eggs',
+          carb: 5,
+          protein: 10,
+          fat: 15),
+    ],
+    lunch: [
+      FoodItem(
+          thumbnail: null,
+          type: 'lunch',
+          name: 'Chicken',
+          carb: 10,
+          protein: 25,
+          fat: 15),
+      FoodItem(
+          thumbnail: null,
+          type: 'lunch',
+          name: 'Rice',
+          carb: 30,
+          protein: 5,
+          fat: 2),
+    ],
+    dinner: [
+      FoodItem(
+          thumbnail: null,
+          type: 'dinner',
+          name: 'Salmon',
+          carb: 5,
+          protein: 20,
+          fat: 10),
+      FoodItem(
+          thumbnail: null,
+          type: 'dinner',
+          name: 'Broccoli',
+          carb: 5,
+          protein: 2,
+          fat: 1),
+    ],
+  );
+
+  final dbHelper = DatabaseHelper.instance;
+// Save the Intakes object to the database
+  void saveIntake() async {
+    await dbHelper.createIntake(intakes);
+  }
+
+// Retrieve all Intakes objects from the database
+  Future<Intakes?> retrieveIntake(int intakeId) async {
+    final retrievedIntakes = await dbHelper.getIntake(intakeId);
+    return retrievedIntakes;
+  }
+
+// Update an Intakes object in the database
+  void updateIntake({required int intakeId, required Intakes newIntake}) async {
+    var retrievedIntakes = await dbHelper.getIntake(intakeId);
+    retrievedIntakes?.breakfast = newIntake.breakfast;
+    retrievedIntakes?.lunch = newIntake.lunch;
+    retrievedIntakes?.dinner = newIntake.dinner;
+
+    await dbHelper.updateIntake(retrievedIntakes!);
+  }
+
+// Delete an Intakes object from the database
+  void deleteIntake(int intakeId) async {
+    final deletedIntakeId = intakeId;
+    await dbHelper.deleteIntake(deletedIntakeId);
   }
 }

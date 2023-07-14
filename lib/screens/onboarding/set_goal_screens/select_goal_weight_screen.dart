@@ -138,6 +138,7 @@ class _SelectGoalWeightScreenState extends State<SelectGoalWeightScreen> {
                       itemWidth: 8.0,
                       minValue: 10,
                       maxValue: 300,
+                      haptics: true,
                       onChanged: (value) {
                         setState(() {
                           selectedWeight = value;

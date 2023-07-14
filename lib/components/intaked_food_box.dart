@@ -21,21 +21,20 @@ class IntakedFoodBox extends StatefulWidget {
 class _IntakedFoodBoxState extends State<IntakedFoodBox> {
   int kcalSum = 0;
 
-  @override
-  void initState() {
+  void calculateKcal() {
     int kcal = 0;
     for (FoodItem item in widget.foodList) {
       kcal = kcal + (item.carb * 4);
       kcal = kcal + (item.protein * 4);
       kcal = kcal + (item.fat * 9);
     }
-    setState(() => kcalSum = kcal);
-
-    super.initState();
+    kcalSum = kcal;
   }
 
   @override
   Widget build(BuildContext context) {
+    calculateKcal();
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24.0),
       child: Container(

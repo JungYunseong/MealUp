@@ -1,11 +1,15 @@
 class FoodItem {
-  late final String? thumbnail;
-  late final String name;
-  late final int carb;
-  late final int protein;
-  late final int fat;
+  int? id;
+  String type;
+  String? thumbnail;
+  String name;
+  int carb;
+  int protein;
+  int fat;
 
   FoodItem({
+    this.id,
+    required this.type,
     this.thumbnail,
     required this.name,
     required this.carb,
@@ -13,22 +17,27 @@ class FoodItem {
     required this.fat,
   });
 
-  FoodItem.fromJson(Map<String, dynamic> json) {
-    thumbnail = json['thumbnail'];
-    name = json['name'];
-    carb = json['carb'];
-    protein = json['protein'];
-    fat = json['fat'];
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'type': type,
+      'thumbnail': thumbnail,
+      'name': name,
+      'carb': carb,
+      'protein': protein,
+      'fat': fat,
+    };
   }
 
-  Map<String, dynamic> toJson() {
-    final data = <String, dynamic>{};
-    data['thumbnail'] = thumbnail;
-    data['name'] = name;
-    data['carb'] = carb;
-    data['protein'] = protein;
-    data['fat'] = fat;
-
-    return data;
+  static FoodItem fromMap(Map<String, dynamic> map) {
+    return FoodItem(
+      id: map['id'],
+      type: map['type'],
+      thumbnail: map['thumbnail'],
+      name: map['name'],
+      carb: map['carb'],
+      protein: map['protein'],
+      fat: map['fat'],
+    );
   }
 }

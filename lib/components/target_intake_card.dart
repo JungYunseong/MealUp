@@ -34,8 +34,7 @@ class _TargetIntakeState extends State<TargetIntake> {
   double proteinPercent = 0.0;
   double fatPercent = 0.0;
 
-  @override
-  void initState() {
+  void calculatePercent() {
     carbPercent = (widget.carbIntake /
                 context.read<Setting>().goalCarbohydrate! *
                 100) >=
@@ -53,15 +52,13 @@ class _TargetIntakeState extends State<TargetIntake> {
             ? 100
             : (widget.fatIntake / context.read<Setting>().goalFat! * 100);
 
-    setState(() {
-      totalPercent = ((carbPercent + proteinPercent + fatPercent) / 3).round();
-    });
-
-    super.initState();
+    totalPercent = ((carbPercent + proteinPercent + fatPercent) / 3).round();
   }
 
   @override
   Widget build(BuildContext context) {
+    calculatePercent();
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24.0),
       child: Container(
@@ -188,7 +185,7 @@ class _TargetIntakeState extends State<TargetIntake> {
   List<RadialBarSeries<ChartData, String>> _getRadialBarCustomizedSeries() {
     return <RadialBarSeries<ChartData, String>>[
       RadialBarSeries<ChartData, String>(
-        animationDuration: 0,
+        animationDuration: 750,
         maximumValue: 100,
         gap: '5%',
         radius: '100%',
