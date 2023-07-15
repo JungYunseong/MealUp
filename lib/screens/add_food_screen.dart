@@ -1,7 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
+import 'package:meal_up/screens/barcode_scanner_screen.dart';
 import '../constant.dart';
 import '../database_helper.dart';
 import '../model/food_item.dart';
@@ -17,7 +16,23 @@ class AddFoodScreen extends StatefulWidget {
 }
 
 class _AddFoodScreenState extends State<AddFoodScreen> {
-  String _scanBarcode = 'Unknown';
+  String testText = '바코드 스캔';
+
+  void scanBarcode(BuildContext context) {
+    showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      builder: (BuildContext context) {
+        return ClipRRect(
+          borderRadius: BorderRadius.circular(20.0),
+          child: SizedBox(
+            height: MediaQuery.of(context).size.height * 0.82,
+            child: const BarcodeScannerScreen(),
+          ),
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -91,11 +106,10 @@ class _AddFoodScreenState extends State<AddFoodScreen> {
                             color: primaryColor,
                             borderRadius: BorderRadius.circular(16.0),
                             onPressed: () async {
-                              await barcodeScan();
-                              print(_scanBarcode);
+                              scanBarcode(context);
                             },
                             child: Text(
-                              '바코드 스캔',
+                              testText,
                               style: buttonText,
                             ),
                           ),
@@ -124,22 +138,6 @@ class _AddFoodScreenState extends State<AddFoodScreen> {
       ),
     );
   }
-
-  Future<void> barcodeScan() async {
-    String barcodeScanRes;
-    try {
-      barcodeScanRes = await FlutterBarcodeScanner.scanBarcode(
-          '#ff6666', 'Cancel', true, ScanMode.BARCODE);
-      print(barcodeScanRes);
-    } on PlatformException {
-      barcodeScanRes = 'Failed to get platform version.';
-    }
-    if (!mounted) return;
-    setState(() {
-      _scanBarcode = barcodeScanRes;
-    });
-  }
-
 
 // Create a new Intakes object
   final intakes = Intakes(

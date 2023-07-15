@@ -5,7 +5,7 @@ import 'model/food_item.dart';
 import 'model/intakes.dart';
 
 class DatabaseHelper {
-  static const _databaseName = 'melauptFdesdfst.db';
+  static const _databaseName = 'meal_up_intakes.db';
   static const _databaseVersion = 1;
 
   static const tableIntakes = 'intakes';
