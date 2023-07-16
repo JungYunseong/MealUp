@@ -1,5 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:meal_up/components/add_food_text_field.dart';
+import 'package:meal_up/model/nutrition.dart';
 import 'package:meal_up/screens/barcode_scanner_screen.dart';
 import '../constant.dart';
 import '../database_helper.dart';
@@ -16,7 +18,105 @@ class AddFoodScreen extends StatefulWidget {
 }
 
 class _AddFoodScreenState extends State<AddFoodScreen> {
-  String testText = '바코드 스캔';
+  String? foodName;
+  int? carb;
+  int? protein;
+  int? fat;
+
+  TextEditingController nameController = TextEditingController();
+  final TextEditingController carbController = TextEditingController();
+  final TextEditingController proteinController = TextEditingController();
+  final TextEditingController fatController = TextEditingController();
+
+  void Function()? addFood;
+
+  void validate() {
+    if (nameController.text == '' ||
+        carbController.text == '' ||
+        proteinController.text == '' ||
+        fatController.text == '') {
+      setState(() {
+        addFood = null;
+      });
+    } else {
+      setState(() {
+        addFood = () {
+          print('식단 추가');
+        };
+      });
+    }
+  }
+
+  Widget nutritionTextField({
+    required Nutrition nutrition,
+    required Function(String value) onChanged,
+  }) {
+    TextEditingController controller = TextEditingController();
+    switch (nutrition) {
+      case Nutrition.carbohydrate:
+        controller = carbController;
+      case Nutrition.protein:
+        controller = proteinController;
+      case Nutrition.fat:
+        controller = fatController;
+    }
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: Row(
+        children: [
+          SizedBox(
+            width: 90.0,
+            child: Row(
+              children: [
+                Container(
+                  width: 13.95,
+                  height: 16,
+                  decoration: ShapeDecoration(
+                    color: nutrition.getColor,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 16.0),
+                Text(
+                  nutrition.convertToString,
+                  style: const TextStyle(
+                    color: Color(0xFF2D3142),
+                    fontSize: 16,
+                    fontFamily: 'Noto Sans KR',
+                    fontWeight: FontWeight.w400,
+                    letterSpacing: 0.23,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const Spacer(),
+          SizedBox(
+            width: 90.0,
+            child: AddFoodTextField(
+              controller: controller,
+              inputType: TextInputType.number,
+              onChanged: onChanged,
+            ),
+          ),
+          const SizedBox(width: 8.0),
+          const Text(
+            'g',
+            style: TextStyle(
+              color: Color(0xFF2D3142),
+              fontSize: 16,
+              fontFamily: 'Rubik',
+              fontWeight: FontWeight.w400,
+              letterSpacing: 0.23,
+            ),
+          )
+        ],
+      ),
+    );
+  }
 
   void scanBarcode(BuildContext context) {
     showModalBottomSheet<void>(
@@ -27,7 +127,11 @@ class _AddFoodScreenState extends State<AddFoodScreen> {
           borderRadius: BorderRadius.circular(20.0),
           child: SizedBox(
             height: MediaQuery.of(context).size.height * 0.82,
-            child: const BarcodeScannerScreen(),
+            child: BarcodeScannerScreen(onResult: (result) {
+              setState(() {
+                nameController.text = result.displayValue ?? '';
+              });
+            },),
           ),
         );
       },
@@ -36,103 +140,146 @@ class _AddFoodScreenState extends State<AddFoodScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: MediaQuery.of(context).size.height,
-      width: MediaQuery.of(context).size.width,
-      alignment: Alignment.center,
-      decoration: backgroundGradient,
-      child: Scaffold(
-        appBar: const CupertinoNavigationBar(
-          middle: Text(
-            '음식 검색',
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              color: Color(0xFF2D3142),
-              fontSize: 16,
-              fontFamily: 'Noto Sans KR',
-              fontWeight: FontWeight.w500,
+    return GestureDetector(
+      onTap: () {
+        FocusManager.instance.primaryFocus?.unfocus();
+      },
+      child: Container(
+        height: MediaQuery.of(context).size.height,
+        width: MediaQuery.of(context).size.width,
+        alignment: Alignment.center,
+        decoration: backgroundGradient,
+        child: Scaffold(
+          appBar: const CupertinoNavigationBar(
+            middle: Text(
+              '식단 추가',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: Color(0xFF2D3142),
+                fontSize: 16,
+                fontFamily: 'Noto Sans KR',
+                fontWeight: FontWeight.w500,
+              ),
             ),
+            border: Border(bottom: BorderSide(color: Colors.transparent)),
+            transitionBetweenRoutes: false,
+            backgroundColor: Colors.transparent,
           ),
-          border: Border(bottom: BorderSide(color: Colors.transparent)),
-          transitionBetweenRoutes: false,
           backgroundColor: Colors.transparent,
-        ),
-        backgroundColor: Colors.transparent,
-        body: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24.0),
-          child: Row(
-            mainAxisSize: MainAxisSize.max,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    const SizedBox(height: 16.0),
-                    Container(
-                      height: 60,
-                      decoration: ShapeDecoration(
-                        color: Colors.white,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16.0),
-                        ),
-                        shadows: const [
-                          BoxShadow(
-                            color: Color(0x144075CD),
-                            blurRadius: 20,
-                            offset: Offset(0, 10),
-                            spreadRadius: 0,
-                          )
+          body: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24.0),
+            child: Row(
+              mainAxisSize: MainAxisSize.max,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      const SizedBox(height: 16.0),
+                      Row(
+                        children: [
+                          const Text(
+                            '식단 이름',
+                            style: TextStyle(
+                              color: Color(0xFF2D3142),
+                              fontSize: 16,
+                              fontFamily: 'Noto Sans KR',
+                              fontWeight: FontWeight.w400,
+                              letterSpacing: 0.23,
+                            ),
+                          ),
+                          const SizedBox(width: 16.0),
+                          Expanded(
+                            child: AddFoodTextField(
+                                controller: nameController,
+                                suffixIcon: Wrap(
+                                  children: [
+                                    CupertinoButton(
+                                        padding: const EdgeInsets.fromLTRB(
+                                            0.0, 12.0, 0.0, 12.0),
+                                        child: Image.asset(
+                                          'assets/icons/scan.png',
+                                          width: 24.0,
+                                          fit: BoxFit.fitWidth,
+                                        ),
+                                        onPressed: () {
+                                          scanBarcode(context);
+                                        }),
+                                    CupertinoButton(
+                                        padding: const EdgeInsets.fromLTRB(
+                                            0.0, 12.0, 12.0, 12.0),
+                                        child: const Icon(
+                                          CupertinoIcons.search,
+                                          color: secondaryColor,
+                                          size: 24.0,
+                                        ),
+                                        onPressed: () {
+                                          print('식단 검색');
+                                        }),
+                                  ],
+                                ),
+                                onChanged: (value) {
+                                  validate();
+                                  foodName = value;
+                                }),
+                          ),
                         ],
                       ),
-                      child: Center(
-                        child: TextField(
-                          decoration: InputDecoration(
-                            border: InputBorder.none,
-                            contentPadding: const EdgeInsets.all(20.0),
-                            suffixIcon: CupertinoButton(
-                                child: const Icon(CupertinoIcons.search),
-                                onPressed: () {}),
+                      const SizedBox(height: 27.0),
+                      nutritionTextField(
+                        nutrition: Nutrition.carbohydrate,
+                        onChanged: (value) {
+                          validate();
+                          if (value.isNotEmpty) {
+                            carb = int.parse(value);
+                          }
+                        },
+                      ),
+                      nutritionTextField(
+                        nutrition: Nutrition.protein,
+                        onChanged: (value) {
+                          validate();
+                          if (value.isNotEmpty) {
+                            protein = int.parse(value);
+                          }
+                        },
+                      ),
+                      nutritionTextField(
+                        nutrition: Nutrition.fat,
+                        onChanged: (value) {
+                          validate();
+                          if (value.isNotEmpty) {
+                            fat = int.parse(value);
+                          }
+                        },
+                      ),
+                      const Spacer(),
+                      SafeArea(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 16.0),
+                          child: CupertinoButton(
+                            color: primaryColor,
+                            disabledColor: tertiaryColor,
+                            borderRadius: BorderRadius.circular(16.0),
+                            onPressed: addFood,
+                            child: SizedBox(
+                              width: double.infinity,
+                              child: Center(
+                                child: Text(
+                                  '식단 추가하기',
+                                  style: buttonText,
+                                ),
+                              ),
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                    const SizedBox(height: 27.0),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: CupertinoButton(
-                            padding: const EdgeInsets.symmetric(vertical: 17.0),
-                            color: primaryColor,
-                            borderRadius: BorderRadius.circular(16.0),
-                            onPressed: () async {
-                              scanBarcode(context);
-                            },
-                            child: Text(
-                              testText,
-                              style: buttonText,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 8.0),
-                        Expanded(
-                          child: CupertinoButton(
-                            padding: const EdgeInsets.symmetric(vertical: 17.0),
-                            color: primaryColor,
-                            borderRadius: BorderRadius.circular(16.0),
-                            onPressed: () {},
-                            child: Text(
-                              '빠른 추가',
-                              style: buttonText,
-                            ),
-                          ),
-                        ),
-                      ],
-                    )
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

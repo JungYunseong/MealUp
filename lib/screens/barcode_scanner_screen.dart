@@ -3,7 +3,9 @@ import 'package:google_ml_kit/google_ml_kit.dart';
 import 'package:meal_up/components/camera_view.dart';
 
 class BarcodeScannerScreen extends StatefulWidget {
-  const BarcodeScannerScreen({super.key});
+  const BarcodeScannerScreen({super.key, required this.onResult});
+
+  final Function(Barcode result) onResult;
 
   @override
   State<BarcodeScannerScreen> createState() => _BarcodeScannerScreenState();
@@ -38,7 +40,7 @@ class _BarcodeScannerScreenState extends State<BarcodeScannerScreen> {
       if (inputImage.metadata?.size != null &&
           inputImage.metadata?.rotation != null) {
         if (barcodes.isNotEmpty) {
-          print(barcodes[0].rawValue);
+          widget.onResult(barcodes[0]);
           if (mounted) {
             Navigator.pop(context);
           }

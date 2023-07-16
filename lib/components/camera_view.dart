@@ -53,13 +53,10 @@ class _CameraViewState extends State<CameraView> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(body: _liveFeedBody());
-  }
-
-  Widget _liveFeedBody() {
     if (_cameras.isEmpty) return Container();
     if (_controller == null) return Container();
     if (_controller?.value.isInitialized == false) return Container();
+
     return Container(
       color: Colors.black,
       child: Stack(
