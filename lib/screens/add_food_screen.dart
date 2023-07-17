@@ -15,12 +15,14 @@ class AddFoodScreenArguments {
   final String date;
   final String mealTime;
   final Intakes? retrieveIntake;
+  final Function() onDismiss;
 
   AddFoodScreenArguments({
     required this.id,
     required this.date,
     required this.mealTime,
     required this.retrieveIntake,
+    required this.onDismiss,
   });
 }
 
@@ -31,12 +33,14 @@ class AddFoodScreen extends StatefulWidget {
     required this.date,
     required this.mealTime,
     required this.retrieveIntake,
+    required this.onDismiss,
   });
 
   final int id;
   final String date;
   final String mealTime;
   final Intakes? retrieveIntake;
+  final Function() onDismiss;
 
   static String routeName = '/add_food_screen';
 
@@ -84,15 +88,26 @@ class _AddFoodScreenState extends State<AddFoodScreen> {
       );
       retrievedIntakes = await dbHelper.getIntake(widget.id);
       await updateIntake(retrievedIntakes!);
+      widget.onDismiss;
     } else {
       await updateIntake(retrievedIntakes);
+      widget.onDismiss;
     }
   }
 
   Future updateIntake(Intakes retrievedIntakes) async {
     var updateIntake = retrievedIntakes;
+    var type = '';
+    switch (widget.mealTime) {
+      case '아침':
+        type = 'breakfast';
+      case '점심':
+        type = 'lunch';
+      case '저녁':
+        type = 'dinner';
+    }
     final item = FoodItem(
-      type: widget.mealTime,
+      type: type,
       name: nameController.text,
       carb: double.parse(carbController.text).round(),
       protein: double.parse(proteinController.text).round(),
@@ -351,21 +366,18 @@ class _AddFoodScreenState extends State<AddFoodScreen> {
                             nutrition: Nutrition.carbohydrate,
                             onChanged: (value) {
                               validate();
-                              if (value.isNotEmpty) {}
                             },
                           ),
                           nutritionTextField(
                             nutrition: Nutrition.protein,
                             onChanged: (value) {
                               validate();
-                              if (value.isNotEmpty) {}
                             },
                           ),
                           nutritionTextField(
                             nutrition: Nutrition.fat,
                             onChanged: (value) {
                               validate();
-                              if (value.isNotEmpty) {}
                             },
                           ),
                           const Spacer(),

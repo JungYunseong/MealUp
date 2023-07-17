@@ -14,12 +14,14 @@ class IntakedFoodBox extends StatefulWidget {
     required this.mealTime,
     required this.foodList,
     required this.retrieveIntake,
+    required this.onDismiss,
   });
 
   final DateTime selectedDate;
   final String mealTime;
   final List<FoodItem> foodList;
   final Intakes? retrieveIntake;
+  final Function() onDismiss;
 
   @override
   State<IntakedFoodBox> createState() => _IntakedFoodBoxState();
@@ -152,6 +154,7 @@ class _IntakedFoodBoxState extends State<IntakedFoodBox> {
                               date: date,
                               mealTime: widget.mealTime,
                               retrieveIntake: widget.retrieveIntake,
+                              onDismiss: widget.onDismiss,
                             ),
                           );
                         }
@@ -184,7 +187,7 @@ class _IntakedFoodBoxState extends State<IntakedFoodBox> {
                       letterSpacing: 0.20,
                     ),
                   ),
-                )
+                ),
             ],
           ),
         ),

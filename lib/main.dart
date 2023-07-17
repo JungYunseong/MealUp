@@ -57,6 +57,7 @@ class MyApp extends StatelessWidget {
                 date: arguments.date,
                 mealTime: arguments.mealTime,
                 retrieveIntake: arguments.retrieveIntake,
+                onDismiss: arguments.onDismiss,
               ),
             );
         }

@@ -66,6 +66,8 @@ class _HomeScreenState extends State<HomeScreen> {
     final formattedDate = dateFormat.format(date);
     final id = int.parse(formattedDate);
     final retrieveIntake = await getIntake(id);
+    print(id);
+    print(retrieveIntake?.breakfast);
 
     setState(() {
       retrievedIntake = retrieveIntake;
@@ -136,6 +138,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   mealTime: '아침',
                   foodList: breakfast,
                   retrieveIntake: retrievedIntake,
+                  onDismiss: () => fetchIntakes(_selectedDate),
                 ),
                 const SizedBox(height: 16.0),
                 IntakedFoodBox(
@@ -143,6 +146,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   mealTime: '점심',
                   foodList: lunch,
                   retrieveIntake: retrievedIntake,
+                  onDismiss: () => fetchIntakes(_selectedDate),
                 ),
                 const SizedBox(height: 16.0),
                 IntakedFoodBox(
@@ -150,6 +154,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   mealTime: '저녁',
                   foodList: dinner,
                   retrieveIntake: retrievedIntake,
+                  onDismiss: () => fetchIntakes(_selectedDate),
                 ),
                 const SizedBox(height: 100.0),
               ],
