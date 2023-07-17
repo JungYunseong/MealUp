@@ -17,12 +17,14 @@ class TargetIntake extends StatefulWidget {
     required this.carbIntake,
     required this.proteinIntake,
     required this.fatIntake,
+    required this.onDismiss,
   });
 
   final DateTime selectedDate;
   final int carbIntake;
   final int proteinIntake;
   final int fatIntake;
+  final Function onDismiss;
 
   @override
   State<TargetIntake> createState() => _TargetIntakeState();
@@ -35,6 +37,7 @@ class _TargetIntakeState extends State<TargetIntake> {
   double fatPercent = 0.0;
 
   void calculatePercent() {
+    setState(() {});
     carbPercent = (widget.carbIntake /
                 context.read<Setting>().goalCarbohydrate! *
                 100) >=
@@ -126,7 +129,12 @@ class _TargetIntakeState extends State<TargetIntake> {
                       ),
                     ),
                     onPressed: () {
-                      Navigator.pushNamed(context, EditGoalScreen.routeName);
+                      Navigator.pushNamed(
+                        context,
+                        EditGoalScreen.routeName,
+                        arguments:
+                            EditGoalScreenArguments(() => widget.onDismiss()),
+                      );
                     },
                   )
                 ],

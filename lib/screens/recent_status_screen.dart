@@ -1,5 +1,4 @@
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
 import 'package:meal_up/components/display_weight.dart';
 
 import '../constant.dart';

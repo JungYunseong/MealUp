@@ -1,4 +1,3 @@
-import 'package:meal_up/screens/edit_goal_screen.dart';
 import 'package:meal_up/screens/tab_screen.dart';
 import 'package:meal_up/screens/onboarding/set_goal_screens/end_set_user_information_screen.dart';
 import 'package:meal_up/screens/onboarding/set_goal_screens/select_activity_level_screen.dart';
@@ -18,5 +17,4 @@ final routes = {
   EndSetUserInformationScreen.routeName: (context) =>
       EndSetUserInformationScreen(),
   TabScreen.routeName: (context) => const TabScreen(),
-  EditGoalScreen.routeName: (context) => const EditGoalScreen(),
 };

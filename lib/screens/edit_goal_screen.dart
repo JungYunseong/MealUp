@@ -3,14 +3,50 @@ import 'package:flutter/material.dart';
 import 'package:meal_up/components/target_intake_row.dart';
 import 'package:meal_up/model/nutrition.dart';
 import 'package:meal_up/providers/setting_provider.dart';
+import 'package:meal_up/screens/edit_goal_sheet_screen.dart';
+import 'package:meal_up/screens/onboarding/set_goal_screens/select_gender_screen.dart';
+import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:provider/provider.dart';
 
 import '../constant.dart';
 
-class EditGoalScreen extends StatelessWidget {
-  const EditGoalScreen({super.key});
+class EditGoalScreenArguments {
+  final Function() onDismiss;
+  EditGoalScreenArguments(this.onDismiss);
+}
+
+class EditGoalScreen extends StatefulWidget {
+  const EditGoalScreen({super.key, required this.onDismiss});
+
+  final Function() onDismiss;
 
   static String routeName = '/edit_goal_screen';
+
+  @override
+  State<EditGoalScreen> createState() => _EditGoalScreenState();
+}
+
+class _EditGoalScreenState extends State<EditGoalScreen> {
+  void editGoal(BuildContext context) {
+    showBarModalBottomSheet<void>(
+      context: context,
+      builder: (BuildContext context) {
+        return EditGoalSheetScreen(
+          onChanged: () {
+            setState(() {
+              context.read<Setting>().getSettingValue();
+            });
+          },
+        );
+      },
+    );
+  }
+
+  @override
+  void dispose() {
+    widget.onDismiss();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -48,7 +84,9 @@ class EditGoalScreen extends StatelessWidget {
                   ],
                 ),
               ),
-              onPressed: () {},
+              onPressed: () {
+                Navigator.pushNamed(context, SelectGenderScreen.routeName);
+              },
             ),
           )
         ],
@@ -137,7 +175,7 @@ class EditGoalScreen extends StatelessWidget {
                   color: primaryColor,
                   borderRadius: BorderRadius.circular(16.0),
                   onPressed: () {
-                    print('목표 수정하기');
+                    editGoal(context);
                   },
                   child: Text(
                     '목표 수정하기',

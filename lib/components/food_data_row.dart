@@ -15,30 +15,34 @@ class FoodDataList extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                food.name,
-                style: const TextStyle(
-                  color: Color(0xFF2D3142),
-                  fontSize: 16,
-                  fontFamily: 'Noto Sans KR',
-                  fontWeight: FontWeight.w500,
-                  letterSpacing: 0.20,
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  food.name,
+                  style: const TextStyle(
+                    color: Color(0xFF2D3142),
+                    fontSize: 16,
+                    fontFamily: 'Noto Sans KR',
+                    fontWeight: FontWeight.w500,
+                    letterSpacing: 0.20,
+                    overflow: TextOverflow.ellipsis
+                  ),
+                  maxLines: 1,
                 ),
-              ),
-              Text(
-                food.makerName,
-                style: const TextStyle(
-                  color: Color(0xFF9C9DB9),
-                  fontSize: 14,
-                  fontFamily: 'Noto Sans KR',
-                  fontWeight: FontWeight.w400,
-                  letterSpacing: 0.20,
+                Text(
+                  food.makerName,
+                  style: const TextStyle(
+                    color: Color(0xFF9C9DB9),
+                    fontSize: 14,
+                    fontFamily: 'Noto Sans KR',
+                    fontWeight: FontWeight.w400,
+                    letterSpacing: 0.20,
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
           CupertinoButton(
               padding: const EdgeInsets.symmetric(horizontal: 32.0),

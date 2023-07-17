@@ -154,7 +154,7 @@ class _IntakedFoodBoxState extends State<IntakedFoodBox> {
                               date: date,
                               mealTime: widget.mealTime,
                               retrieveIntake: widget.retrieveIntake,
-                              onDismiss: widget.onDismiss,
+                              onDismiss: widget.onDismiss
                             ),
                           );
                         }

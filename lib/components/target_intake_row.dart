@@ -23,8 +23,7 @@ class TargetIntakeRow extends StatefulWidget {
 class _TargetIntakeRowState extends State<TargetIntakeRow> {
   int goalIntake = 1;
 
-  @override
-  void initState() {
+  void setgoalIntake() {
     setState(() {
       switch (widget.nutrition) {
         case Nutrition.carbohydrate:
@@ -35,11 +34,12 @@ class _TargetIntakeRowState extends State<TargetIntakeRow> {
           goalIntake = context.read<Setting>().goalFat!;
       }
     });
-    super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
+    setgoalIntake();
+
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: Row(

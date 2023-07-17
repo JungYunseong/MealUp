@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:meal_up/components/add_food_text_field.dart';
 import 'package:meal_up/components/food_data_row.dart';
+import 'package:meal_up/components/nutrition_text_field.dart';
 import 'package:meal_up/model/food_item.dart';
 import 'package:meal_up/model/nutrition.dart';
 import 'package:meal_up/screens/barcode_scanner_screen.dart';
@@ -88,10 +89,10 @@ class _AddFoodScreenState extends State<AddFoodScreen> {
       );
       retrievedIntakes = await dbHelper.getIntake(widget.id);
       await updateIntake(retrievedIntakes!);
-      widget.onDismiss;
+      widget.onDismiss();
     } else {
       await updateIntake(retrievedIntakes);
-      widget.onDismiss;
+      widget.onDismiss();
     }
   }
 
@@ -124,77 +125,6 @@ class _AddFoodScreenState extends State<AddFoodScreen> {
     }
 
     await dbHelper.updateIntake(updateIntake);
-  }
-
-  Widget nutritionTextField({
-    required Nutrition nutrition,
-    required Function(String value) onChanged,
-  }) {
-    TextEditingController controller = TextEditingController();
-    switch (nutrition) {
-      case Nutrition.carbohydrate:
-        controller = carbController;
-      case Nutrition.protein:
-        controller = proteinController;
-      case Nutrition.fat:
-        controller = fatController;
-    }
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: Row(
-        children: [
-          SizedBox(
-            width: 90.0,
-            child: Row(
-              children: [
-                Container(
-                  width: 13.95,
-                  height: 16,
-                  decoration: ShapeDecoration(
-                    color: nutrition.getColor,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 16.0),
-                Text(
-                  nutrition.convertToString,
-                  style: const TextStyle(
-                    color: Color(0xFF2D3142),
-                    fontSize: 16,
-                    fontFamily: 'Noto Sans KR',
-                    fontWeight: FontWeight.w400,
-                    letterSpacing: 0.23,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const Spacer(),
-          SizedBox(
-            width: 90.0,
-            child: AddFoodTextField(
-              controller: controller,
-              inputType: TextInputType.number,
-              onChanged: onChanged,
-            ),
-          ),
-          const SizedBox(width: 8.0),
-          const Text(
-            'g',
-            style: TextStyle(
-              color: Color(0xFF2D3142),
-              fontSize: 16,
-              fontFamily: 'Rubik',
-              fontWeight: FontWeight.w400,
-              letterSpacing: 0.23,
-            ),
-          )
-        ],
-      ),
-    );
   }
 
   void scanBarcode(BuildContext context) {
@@ -362,24 +292,24 @@ class _AddFoodScreenState extends State<AddFoodScreen> {
                             ],
                           ),
                           const SizedBox(height: 27.0),
-                          nutritionTextField(
-                            nutrition: Nutrition.carbohydrate,
-                            onChanged: (value) {
-                              validate();
-                            },
-                          ),
-                          nutritionTextField(
-                            nutrition: Nutrition.protein,
-                            onChanged: (value) {
-                              validate();
-                            },
-                          ),
-                          nutritionTextField(
-                            nutrition: Nutrition.fat,
-                            onChanged: (value) {
-                              validate();
-                            },
-                          ),
+                          NutritionTextField(
+                              nutrition: Nutrition.carbohydrate,
+                              controller: carbController,
+                              onChanged: (_) {
+                                validate();
+                              }),
+                          NutritionTextField(
+                              nutrition: Nutrition.protein,
+                              controller: proteinController,
+                              onChanged: (_) {
+                                validate();
+                              }),
+                          NutritionTextField(
+                              nutrition: Nutrition.fat,
+                              controller: fatController,
+                              onChanged: (_) {
+                                validate();
+                              }),
                           const Spacer(),
                           SafeArea(
                             child: Padding(

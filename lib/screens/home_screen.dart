@@ -66,8 +66,6 @@ class _HomeScreenState extends State<HomeScreen> {
     final formattedDate = dateFormat.format(date);
     final id = int.parse(formattedDate);
     final retrieveIntake = await getIntake(id);
-    print(id);
-    print(retrieveIntake?.breakfast);
 
     setState(() {
       retrievedIntake = retrieveIntake;
@@ -90,7 +88,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   void initState() {
-    fetchNutrition();
+    fetchIntakes(_selectedDate);
     super.initState();
   }
 
@@ -131,6 +129,9 @@ class _HomeScreenState extends State<HomeScreen> {
                   carbIntake: carbIntake,
                   proteinIntake: proteinIntake,
                   fatIntake: fatIntake,
+                  onDismiss: () {
+                    fetchIntakes(_selectedDate);
+                  },
                 ),
                 const SizedBox(height: 16.0),
                 IntakedFoodBox(

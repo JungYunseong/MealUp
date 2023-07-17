@@ -47,6 +47,7 @@ dependencies:
   google_ml_kit: ^0.16.1
   camera: ^0.10.5+2
   http: ^1.1.0
+  modal_bottom_sheet: ^3.0.0-pre
 
 dev_dependencies:
   flutter_test:

@@ -99,6 +99,7 @@ class UIHelper {
       goalCarbohydrate: goalCarbohydrate,
     );
 
+    prefs.remove('GoalCalories');
     prefs.setString('GoalCalories', json.encode(calories.toJson()));
   }
 

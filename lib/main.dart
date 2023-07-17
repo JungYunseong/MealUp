@@ -3,6 +3,7 @@ import 'package:meal_up/constant.dart';
 import 'package:meal_up/providers/setting_provider.dart';
 import 'package:meal_up/routes.dart';
 import 'package:meal_up/screens/add_food_screen.dart';
+import 'package:meal_up/screens/edit_goal_screen.dart';
 import 'package:meal_up/screens/tab_screen.dart';
 import 'package:meal_up/screens/onboarding/onboarding_screen.dart';
 import 'package:meal_up/user_information_helper.dart';
@@ -50,7 +51,6 @@ class MyApp extends StatelessWidget {
         switch (settings.name) {
           case '/add_food_screen':
             final arguments = settings.arguments as AddFoodScreenArguments;
-
             return MaterialPageRoute(
               builder: (context) => AddFoodScreen(
                 id: arguments.id,
@@ -59,6 +59,12 @@ class MyApp extends StatelessWidget {
                 retrieveIntake: arguments.retrieveIntake,
                 onDismiss: arguments.onDismiss,
               ),
+            );
+
+          case '/edit_goal_screen':
+            final arguments = settings.arguments as EditGoalScreenArguments;
+            return MaterialPageRoute(
+              builder: (context) => EditGoalScreen(onDismiss: arguments.onDismiss),
             );
         }
         return null;
