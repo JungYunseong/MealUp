@@ -30,10 +30,12 @@ class _HomeScreenState extends State<HomeScreen> {
   int proteinIntake = 0;
   int fatIntake = 0;
 
+  Intakes? retrievedIntake;
+
   Future<Intakes?> getIntake(int intakeId) async {
     final dbHelper = DatabaseHelper.instance;
-    final retrievedIntakes = await dbHelper.getIntake(intakeId);
-    return retrievedIntakes;
+    retrievedIntake = await dbHelper.getIntake(intakeId);
+    return retrievedIntake;
   }
 
   (int, int, int) calculateIntake() {
@@ -66,11 +68,12 @@ class _HomeScreenState extends State<HomeScreen> {
     final retrieveIntake = await getIntake(id);
 
     setState(() {
+      retrievedIntake = retrieveIntake;
       breakfast = retrieveIntake?.breakfast ?? [];
       lunch = retrieveIntake?.lunch ?? [];
       dinner = retrieveIntake?.dinner ?? [];
     });
-    
+
     fetchNutrition();
   }
 
@@ -129,18 +132,24 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
                 const SizedBox(height: 16.0),
                 IntakedFoodBox(
+                  selectedDate: _selectedDate,
                   mealTime: '아침',
                   foodList: breakfast,
+                  retrieveIntake: retrievedIntake,
                 ),
                 const SizedBox(height: 16.0),
                 IntakedFoodBox(
+                  selectedDate: _selectedDate,
                   mealTime: '점심',
                   foodList: lunch,
+                  retrieveIntake: retrievedIntake,
                 ),
                 const SizedBox(height: 16.0),
                 IntakedFoodBox(
+                  selectedDate: _selectedDate,
                   mealTime: '저녁',
                   foodList: dinner,
+                  retrieveIntake: retrievedIntake,
                 ),
                 const SizedBox(height: 100.0),
               ],

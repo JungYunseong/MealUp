@@ -1,18 +1,25 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:meal_up/components/food_row.dart';
 import 'package:meal_up/model/food_item.dart';
 import 'package:meal_up/screens/add_food_screen.dart';
 
+import '../model/intakes.dart';
+
 class IntakedFoodBox extends StatefulWidget {
   const IntakedFoodBox({
     super.key,
+    required this.selectedDate,
     required this.mealTime,
     required this.foodList,
+    required this.retrieveIntake,
   });
 
+  final DateTime selectedDate;
   final String mealTime;
   final List<FoodItem> foodList;
+  final Intakes? retrieveIntake;
 
   @override
   State<IntakedFoodBox> createState() => _IntakedFoodBoxState();
@@ -129,7 +136,25 @@ class _IntakedFoodBoxState extends State<IntakedFoodBox> {
                         ),
                       ),
                       onPressed: () async {
-                        Navigator.pushNamed(context, AddFoodScreen.routeName);
+                        final idFormat = DateFormat('yyyyMMdd');
+                        final dateFormat = DateFormat('yyyy-MM-dd');
+                        final formattedId =
+                            idFormat.format(widget.selectedDate);
+                        final date = dateFormat.format(widget.selectedDate);
+                        final id = int.parse(formattedId);
+
+                        if (mounted) {
+                          Navigator.pushNamed(
+                            context,
+                            AddFoodScreen.routeName,
+                            arguments: AddFoodScreenArguments(
+                              id: id,
+                              date: date,
+                              mealTime: widget.mealTime,
+                              retrieveIntake: widget.retrieveIntake,
+                            ),
+                          );
+                        }
                       }),
                 ],
               ),

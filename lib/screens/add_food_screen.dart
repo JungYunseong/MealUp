@@ -1,15 +1,42 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:meal_up/components/add_food_text_field.dart';
+import 'package:meal_up/components/food_data_row.dart';
+import 'package:meal_up/model/food_item.dart';
 import 'package:meal_up/model/nutrition.dart';
 import 'package:meal_up/screens/barcode_scanner_screen.dart';
+import 'package:meal_up/screens/search_api.dart';
 import '../constant.dart';
 import '../database_helper.dart';
-import '../model/food_item.dart';
 import '../model/intakes.dart';
 
+class AddFoodScreenArguments {
+  final int id;
+  final String date;
+  final String mealTime;
+  final Intakes? retrieveIntake;
+
+  AddFoodScreenArguments({
+    required this.id,
+    required this.date,
+    required this.mealTime,
+    required this.retrieveIntake,
+  });
+}
+
 class AddFoodScreen extends StatefulWidget {
-  const AddFoodScreen({super.key});
+  const AddFoodScreen({
+    super.key,
+    required this.id,
+    required this.date,
+    required this.mealTime,
+    required this.retrieveIntake,
+  });
+
+  final int id;
+  final String date;
+  final String mealTime;
+  final Intakes? retrieveIntake;
 
   static String routeName = '/add_food_screen';
 
@@ -18,10 +45,7 @@ class AddFoodScreen extends StatefulWidget {
 }
 
 class _AddFoodScreenState extends State<AddFoodScreen> {
-  String? foodName;
-  int? carb;
-  int? protein;
-  int? fat;
+  bool isLoading = false;
 
   TextEditingController nameController = TextEditingController();
   final TextEditingController carbController = TextEditingController();
@@ -29,6 +53,8 @@ class _AddFoodScreenState extends State<AddFoodScreen> {
   final TextEditingController fatController = TextEditingController();
 
   void Function()? addFood;
+
+  late final intake = widget.retrieveIntake;
 
   void validate() {
     if (nameController.text == '' ||
@@ -40,11 +66,49 @@ class _AddFoodScreenState extends State<AddFoodScreen> {
       });
     } else {
       setState(() {
-        addFood = () {
-          print('식단 추가');
+        addFood = () async {
+          await update();
+          if (mounted) {
+            Navigator.pop(context);
+          }
         };
       });
     }
+  }
+
+  Future update() async {
+    var retrievedIntakes = widget.retrieveIntake;
+    if (retrievedIntakes == null) {
+      await dbHelper.createIntake(
+        Intakes(id: widget.id, date: widget.date),
+      );
+      retrievedIntakes = await dbHelper.getIntake(widget.id);
+      await updateIntake(retrievedIntakes!);
+    } else {
+      await updateIntake(retrievedIntakes);
+    }
+  }
+
+  Future updateIntake(Intakes retrievedIntakes) async {
+    var updateIntake = retrievedIntakes;
+    final item = FoodItem(
+      type: widget.mealTime,
+      name: nameController.text,
+      carb: double.parse(carbController.text).round(),
+      protein: double.parse(proteinController.text).round(),
+      fat: double.parse(fatController.text).round(),
+    );
+
+    switch (widget.mealTime) {
+      case '아침':
+        updateIntake.breakfast.add(item);
+      case '점심':
+        updateIntake.lunch.add(item);
+      case '저녁':
+        updateIntake.dinner.add(item);
+    }
+
+    await dbHelper.updateIntake(updateIntake);
   }
 
   Widget nutritionTextField({
@@ -127,239 +191,247 @@ class _AddFoodScreenState extends State<AddFoodScreen> {
           borderRadius: BorderRadius.circular(20.0),
           child: SizedBox(
             height: MediaQuery.of(context).size.height * 0.82,
-            child: BarcodeScannerScreen(onResult: (result) {
-              setState(() {
-                nameController.text = result.displayValue ?? '';
-              });
-            },),
+            child: BarcodeScannerScreen(
+              onResult: (result) {
+                setState(() {
+                  nameController.text = result.displayValue ?? '';
+                });
+              },
+            ),
           ),
         );
       },
     );
   }
 
+  void searchFood(BuildContext context, {required String query}) async {
+    FocusManager.instance.primaryFocus?.unfocus();
+    setState(() => isLoading = true);
+    final api = SearchAPI();
+    final result = await api.fetch(query);
+    setState(() => isLoading = false);
+    if (result.isNotEmpty && mounted) {
+      showModalBottomSheet<void>(
+        context: context,
+        builder: (BuildContext context) {
+          return FoodDataList(
+            data: result,
+            onSelect: (name, carb, protein, fat) {
+              Navigator.pop(context);
+              setState(() {
+                nameController.text = name;
+                carbController.text = carb;
+                proteinController.text = protein;
+                fatController.text = fat;
+              });
+              validate();
+            },
+          );
+        },
+      );
+    } else {
+      _showAlert();
+    }
+  }
+
+  void _showAlert() {
+    showCupertinoDialog(
+        context: context,
+        builder: (context) {
+          return CupertinoAlertDialog(
+            title: const Text('검색 결과가 없습니다'),
+            content: const Text('직접 식단정보를 입력해 주세요.'),
+            actions: [
+              CupertinoDialogAction(
+                  isDefaultAction: true,
+                  child: const Text("확인"),
+                  onPressed: () {
+                    isLoading = false;
+                    Navigator.pop(context);
+                  })
+            ],
+          );
+        });
+  }
+
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        FocusManager.instance.primaryFocus?.unfocus();
-      },
-      child: Container(
-        height: MediaQuery.of(context).size.height,
-        width: MediaQuery.of(context).size.width,
-        alignment: Alignment.center,
-        decoration: backgroundGradient,
-        child: Scaffold(
-          appBar: const CupertinoNavigationBar(
-            middle: Text(
-              '식단 추가',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                color: Color(0xFF2D3142),
-                fontSize: 16,
-                fontFamily: 'Noto Sans KR',
-                fontWeight: FontWeight.w500,
+    return Stack(
+      children: [
+        GestureDetector(
+          onTap: () {
+            FocusManager.instance.primaryFocus?.unfocus();
+          },
+          child: Container(
+            height: MediaQuery.of(context).size.height,
+            width: MediaQuery.of(context).size.width,
+            alignment: Alignment.center,
+            decoration: backgroundGradient,
+            child: Scaffold(
+              appBar: const CupertinoNavigationBar(
+                middle: Text(
+                  '식단 추가',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: Color(0xFF2D3142),
+                    fontSize: 16,
+                    fontFamily: 'Noto Sans KR',
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                border: Border(bottom: BorderSide(color: Colors.transparent)),
+                transitionBetweenRoutes: false,
+                backgroundColor: Colors.transparent,
               ),
-            ),
-            border: Border(bottom: BorderSide(color: Colors.transparent)),
-            transitionBetweenRoutes: false,
-            backgroundColor: Colors.transparent,
-          ),
-          backgroundColor: Colors.transparent,
-          body: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24.0),
-            child: Row(
-              mainAxisSize: MainAxisSize.max,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      const SizedBox(height: 16.0),
-                      Row(
+              backgroundColor: Colors.transparent,
+              body: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                child: Row(
+                  mainAxisSize: MainAxisSize.max,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          const Text(
-                            '식단 이름',
-                            style: TextStyle(
-                              color: Color(0xFF2D3142),
-                              fontSize: 16,
-                              fontFamily: 'Noto Sans KR',
-                              fontWeight: FontWeight.w400,
-                              letterSpacing: 0.23,
-                            ),
-                          ),
-                          const SizedBox(width: 16.0),
-                          Expanded(
-                            child: AddFoodTextField(
-                                controller: nameController,
-                                suffixIcon: Wrap(
-                                  children: [
-                                    CupertinoButton(
-                                        padding: const EdgeInsets.fromLTRB(
-                                            0.0, 12.0, 0.0, 12.0),
-                                        child: Image.asset(
-                                          'assets/icons/scan.png',
-                                          width: 24.0,
-                                          fit: BoxFit.fitWidth,
-                                        ),
-                                        onPressed: () {
-                                          scanBarcode(context);
-                                        }),
-                                    CupertinoButton(
-                                        padding: const EdgeInsets.fromLTRB(
-                                            0.0, 12.0, 12.0, 12.0),
-                                        child: const Icon(
-                                          CupertinoIcons.search,
-                                          color: secondaryColor,
-                                          size: 24.0,
-                                        ),
-                                        onPressed: () {
-                                          print('식단 검색');
-                                        }),
-                                  ],
+                          const SizedBox(height: 16.0),
+                          Row(
+                            children: [
+                              const Text(
+                                '식단 이름',
+                                style: TextStyle(
+                                  color: Color(0xFF2D3142),
+                                  fontSize: 16,
+                                  fontFamily: 'Noto Sans KR',
+                                  fontWeight: FontWeight.w400,
+                                  letterSpacing: 0.23,
                                 ),
-                                onChanged: (value) {
-                                  validate();
-                                  foodName = value;
-                                }),
+                              ),
+                              const SizedBox(width: 16.0),
+                              Expanded(
+                                child: AddFoodTextField(
+                                    controller: nameController,
+                                    suffixIcon: Wrap(
+                                      children: [
+                                        CupertinoButton(
+                                            padding: const EdgeInsets.fromLTRB(
+                                                0.0, 12.0, 0.0, 12.0),
+                                            child: Image.asset(
+                                              'assets/icons/scan.png',
+                                              width: 24.0,
+                                              fit: BoxFit.fitWidth,
+                                            ),
+                                            onPressed: () {
+                                              scanBarcode(context);
+                                            }),
+                                        CupertinoButton(
+                                            padding: const EdgeInsets.fromLTRB(
+                                                0.0, 12.0, 12.0, 12.0),
+                                            child: const Icon(
+                                              CupertinoIcons.search,
+                                              color: secondaryColor,
+                                              size: 24.0,
+                                            ),
+                                            onPressed: () {
+                                              searchFood(
+                                                context,
+                                                query: nameController.text,
+                                              );
+                                            }),
+                                      ],
+                                    ),
+                                    onChanged: (value) {
+                                      validate();
+                                    }),
+                              ),
+                            ],
                           ),
-                        ],
-                      ),
-                      const SizedBox(height: 27.0),
-                      nutritionTextField(
-                        nutrition: Nutrition.carbohydrate,
-                        onChanged: (value) {
-                          validate();
-                          if (value.isNotEmpty) {
-                            carb = int.parse(value);
-                          }
-                        },
-                      ),
-                      nutritionTextField(
-                        nutrition: Nutrition.protein,
-                        onChanged: (value) {
-                          validate();
-                          if (value.isNotEmpty) {
-                            protein = int.parse(value);
-                          }
-                        },
-                      ),
-                      nutritionTextField(
-                        nutrition: Nutrition.fat,
-                        onChanged: (value) {
-                          validate();
-                          if (value.isNotEmpty) {
-                            fat = int.parse(value);
-                          }
-                        },
-                      ),
-                      const Spacer(),
-                      SafeArea(
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 16.0),
-                          child: CupertinoButton(
-                            color: primaryColor,
-                            disabledColor: tertiaryColor,
-                            borderRadius: BorderRadius.circular(16.0),
-                            onPressed: addFood,
-                            child: SizedBox(
-                              width: double.infinity,
-                              child: Center(
-                                child: Text(
-                                  '식단 추가하기',
-                                  style: buttonText,
+                          const SizedBox(height: 27.0),
+                          nutritionTextField(
+                            nutrition: Nutrition.carbohydrate,
+                            onChanged: (value) {
+                              validate();
+                              if (value.isNotEmpty) {}
+                            },
+                          ),
+                          nutritionTextField(
+                            nutrition: Nutrition.protein,
+                            onChanged: (value) {
+                              validate();
+                              if (value.isNotEmpty) {}
+                            },
+                          ),
+                          nutritionTextField(
+                            nutrition: Nutrition.fat,
+                            onChanged: (value) {
+                              validate();
+                              if (value.isNotEmpty) {}
+                            },
+                          ),
+                          const Spacer(),
+                          SafeArea(
+                            child: Padding(
+                              padding: const EdgeInsets.fromLTRB(
+                                  0.0, 0.0, 0.0, 16.0),
+                              child: CupertinoButton(
+                                color: primaryColor,
+                                disabledColor: tertiaryColor,
+                                borderRadius: BorderRadius.circular(16.0),
+                                onPressed: addFood,
+                                child: SizedBox(
+                                  width: double.infinity,
+                                  child: Center(
+                                    child: Text(
+                                      '식단 추가하기',
+                                      style: buttonText,
+                                    ),
+                                  ),
                                 ),
                               ),
                             ),
                           ),
-                        ),
+                        ],
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
-              ],
+              ),
             ),
           ),
         ),
-      ),
+        if (isLoading)
+          Container(
+            width: double.infinity,
+            height: double.infinity,
+            color: Colors.black.withOpacity(0.4),
+            child: Center(
+              child: Container(
+                width: 100,
+                height: 100,
+                decoration: BoxDecoration(
+                  color: Colors.black.withOpacity(0.6),
+                  borderRadius: BorderRadius.circular(16.0),
+                ),
+                child: const Padding(
+                  padding: EdgeInsets.all(24.0),
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2.0,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            ),
+          )
+      ],
     );
   }
 
-// Create a new Intakes object
-  final intakes = Intakes(
-    id: 20230714,
-    date: '2023-07-14',
-    breakfast: [
-      FoodItem(
-          thumbnail: null,
-          type: 'breakfast',
-          name: 'Toast',
-          carb: 20,
-          protein: 5,
-          fat: 10),
-      FoodItem(
-          thumbnail: null,
-          type: 'breakfast',
-          name: 'Eggs',
-          carb: 5,
-          protein: 10,
-          fat: 15),
-    ],
-    lunch: [
-      FoodItem(
-          thumbnail: null,
-          type: 'lunch',
-          name: 'Chicken',
-          carb: 10,
-          protein: 25,
-          fat: 15),
-      FoodItem(
-          thumbnail: null,
-          type: 'lunch',
-          name: 'Rice',
-          carb: 30,
-          protein: 5,
-          fat: 2),
-    ],
-    dinner: [
-      FoodItem(
-          thumbnail: null,
-          type: 'dinner',
-          name: 'Salmon',
-          carb: 5,
-          protein: 20,
-          fat: 10),
-      FoodItem(
-          thumbnail: null,
-          type: 'dinner',
-          name: 'Broccoli',
-          carb: 5,
-          protein: 2,
-          fat: 1),
-    ],
-  );
-
   final dbHelper = DatabaseHelper.instance;
-// Save the Intakes object to the database
-  void saveIntake() async {
-    await dbHelper.createIntake(intakes);
-  }
 
 // Retrieve all Intakes objects from the database
   Future<Intakes?> retrieveIntake(int intakeId) async {
     final retrievedIntakes = await dbHelper.getIntake(intakeId);
     return retrievedIntakes;
-  }
-
-// Update an Intakes object in the database
-  void updateIntake({required int intakeId, required Intakes newIntake}) async {
-    var retrievedIntakes = await dbHelper.getIntake(intakeId);
-    retrievedIntakes?.breakfast = newIntake.breakfast;
-    retrievedIntakes?.lunch = newIntake.lunch;
-    retrievedIntakes?.dinner = newIntake.dinner;
-
-    await dbHelper.updateIntake(retrievedIntakes!);
   }
 
 // Delete an Intakes object from the database
