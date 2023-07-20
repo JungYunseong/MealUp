@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:meal_up/components/add_barcode_data_sheet.dart';
 import 'package:meal_up/components/add_food_text_field.dart';
 import 'package:meal_up/components/food_data_row.dart';
 import 'package:meal_up/components/nutrition_text_field.dart';
@@ -130,13 +131,13 @@ class _AddFoodScreenState extends State<AddFoodScreen> {
     await dbHelper.updateIntake(updateIntake);
   }
 
-  Future<(String, String, String, String, String)?> searchBarcode(
+  Future<(String, String?, String, String, String)?> searchBarcode(
       {required String barcode}) async {
     final firebaseService = FirebaseService();
     final data = await firebaseService.searchBarcodeId(query: barcode);
     if (data != null) {
       final name = data['name'] as String;
-      final thumbnail = data['thumbnail'] as String;
+      final thumbnail = data['thumbnail'] as String?;
       final carb = data['carb'] as String;
       final protein = data['protein'] as String;
       final fat = data['fat'] as String;
@@ -168,10 +169,38 @@ class _AddFoodScreenState extends State<AddFoodScreen> {
                     fatController.text = data.$5;
                   });
                 } else {
-                  print('no data');
+                  if (!mounted) return;
+                  addBarcodeData(context, barcodeId: result.displayValue!);
                 }
               },
             ),
+          ),
+        );
+      },
+    );
+  }
+
+  void addBarcodeData(BuildContext context, {required String barcodeId}) {
+    showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      isDismissible: false,
+      builder: (BuildContext context) {
+        return Padding(
+          padding:
+              EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+          child: AddBarcodeDataSheet(
+            barcodeId: barcodeId,
+            tapAddButton: (name, carb, protein, fat) {
+              setState(() {
+                nameController.text = name;
+                thumbnail = null;
+                carbController.text = carb;
+                proteinController.text = protein;
+                fatController.text = fat;
+              });
+              validate();
+            },
           ),
         );
       },
@@ -194,6 +223,7 @@ class _AddFoodScreenState extends State<AddFoodScreen> {
               Navigator.pop(context);
               setState(() {
                 nameController.text = name;
+                thumbnail = null;
                 carbController.text = carb;
                 proteinController.text = protein;
                 fatController.text = fat;

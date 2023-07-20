@@ -22,7 +22,7 @@ class FoodDataList extends StatelessWidget {
                 Text(
                   food.name,
                   style: const TextStyle(
-                    color: Color(0xFF2D3142),
+                    color: primaryTextColor,
                     fontSize: 16,
                     fontFamily: 'Noto Sans KR',
                     fontWeight: FontWeight.w500,
@@ -82,10 +82,10 @@ class FoodDataList extends StatelessWidget {
               '검색 결과',
               textAlign: TextAlign.center,
               style: TextStyle(
-                color: Color(0xFF2D3142),
+                color: primaryColor,
                 fontSize: 18,
                 fontFamily: 'Noto Sans KR',
-                fontWeight: FontWeight.w500,
+                fontWeight: FontWeight.w600,
               ),
             ),
           ),

@@ -54,7 +54,7 @@ class NutritionTextField extends StatelessWidget {
             width: 90.0,
             child: AddFoodTextField(
               controller: controller,
-              inputType: TextInputType.number,
+              inputType: const TextInputType.numberWithOptions(decimal: true),
               onChanged: onChanged,
             ),
           ),
