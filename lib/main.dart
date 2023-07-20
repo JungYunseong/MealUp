@@ -8,8 +8,16 @@ import 'package:meal_up/screens/tab_screen.dart';
 import 'package:meal_up/screens/onboarding/onboarding_screen.dart';
 import 'package:meal_up/user_information_helper.dart';
 import 'package:provider/provider.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+
   final providers = [
     ChangeNotifierProvider(create: (_) => Setting()),
   ];
@@ -64,7 +72,8 @@ class MyApp extends StatelessWidget {
           case '/edit_goal_screen':
             final arguments = settings.arguments as EditGoalScreenArguments;
             return MaterialPageRoute(
-              builder: (context) => EditGoalScreen(onDismiss: arguments.onDismiss),
+              builder: (context) =>
+                  EditGoalScreen(onDismiss: arguments.onDismiss),
             );
         }
         return null;

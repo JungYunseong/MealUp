@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:meal_up/components/add_food_text_field.dart';
 import 'package:meal_up/components/food_data_row.dart';
 import 'package:meal_up/components/nutrition_text_field.dart';
+import 'package:meal_up/firebase_service.dart';
 import 'package:meal_up/model/food_item.dart';
 import 'package:meal_up/model/nutrition.dart';
 import 'package:meal_up/screens/barcode_scanner_screen.dart';
@@ -56,6 +57,7 @@ class _AddFoodScreenState extends State<AddFoodScreen> {
   final TextEditingController carbController = TextEditingController();
   final TextEditingController proteinController = TextEditingController();
   final TextEditingController fatController = TextEditingController();
+  String? thumbnail;
 
   void Function()? addFood;
 
@@ -110,6 +112,7 @@ class _AddFoodScreenState extends State<AddFoodScreen> {
     final item = FoodItem(
       type: type,
       name: nameController.text,
+      thumbnail: thumbnail,
       carb: double.parse(carbController.text).round(),
       protein: double.parse(proteinController.text).round(),
       fat: double.parse(fatController.text).round(),
@@ -127,6 +130,22 @@ class _AddFoodScreenState extends State<AddFoodScreen> {
     await dbHelper.updateIntake(updateIntake);
   }
 
+  Future<(String, String, String, String, String)?> searchBarcode(
+      {required String barcode}) async {
+    final firebaseService = FirebaseService();
+    final data = await firebaseService.searchBarcodeId(query: barcode);
+    if (data != null) {
+      final name = data['name'] as String;
+      final thumbnail = data['thumbnail'] as String;
+      final carb = data['carb'] as String;
+      final protein = data['protein'] as String;
+      final fat = data['fat'] as String;
+      return (name, thumbnail, carb, protein, fat);
+    } else {
+      return null;
+    }
+  }
+
   void scanBarcode(BuildContext context) {
     showModalBottomSheet<void>(
       context: context,
@@ -137,10 +156,20 @@ class _AddFoodScreenState extends State<AddFoodScreen> {
           child: SizedBox(
             height: MediaQuery.of(context).size.height * 0.82,
             child: BarcodeScannerScreen(
-              onResult: (result) {
-                setState(() {
-                  nameController.text = result.displayValue ?? '';
-                });
+              onResult: (result) async {
+                final data =
+                    await searchBarcode(barcode: result.displayValue ?? '');
+                if (data != null) {
+                  setState(() {
+                    nameController.text = data.$1;
+                    thumbnail = data.$2;
+                    carbController.text = data.$3;
+                    proteinController.text = data.$4;
+                    fatController.text = data.$5;
+                  });
+                } else {
+                  print('no data');
+                }
               },
             ),
           ),

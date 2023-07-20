@@ -24,7 +24,7 @@ class _RecentStatusScreenState extends State<RecentStatusScreen> {
         ),
         const SizedBox(height: 16.0),
         Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
             DisplayWeight(label: '현재', weight: currentWeight),
             Image.asset(
