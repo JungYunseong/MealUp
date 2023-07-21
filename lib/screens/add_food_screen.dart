@@ -7,7 +7,8 @@ import 'package:meal_up/components/nutrition_text_field.dart';
 import 'package:meal_up/model/food_item.dart';
 import 'package:meal_up/model/nutrition.dart';
 import 'package:meal_up/screens/barcode_scanner_screen.dart';
-import 'package:meal_up/screens/search_api.dart';
+import 'package:meal_up/search_api.dart';
+import '../barcode_search_api.dart';
 import '../constant.dart';
 import '../intake_database_helper.dart';
 import '../model/intakes.dart';
@@ -131,17 +132,12 @@ class _AddFoodScreenState extends State<AddFoodScreen> {
     await dbHelper.updateIntake(updateIntake);
   }
 
-  Future<(String, String?, String, String, String)?> searchBarcode(
+  Future<(String?, String, String, String, String)?> searchBarcode(
       {required String barcode}) async {
-    final firebaseService = FirebaseService();
-    final data = await firebaseService.searchBarcodeId(query: barcode);
+    final api = BarcodeSearchAPI();
+    final data = await api.searchBarcode(barcode);
     if (data != null) {
-      final name = data['name'] as String;
-      final thumbnail = data['thumbnail'] as String?;
-      final carb = data['carb'] as String;
-      final protein = data['protein'] as String;
-      final fat = data['fat'] as String;
-      return (name, thumbnail, carb, protein, fat);
+      return (data.$1, data.$2, data.$3, data.$4, data.$5);
     } else {
       return null;
     }
@@ -151,19 +147,18 @@ class _AddFoodScreenState extends State<AddFoodScreen> {
     showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
-      builder: (BuildContext context) {
+      builder: (BuildContext _) {
         return ClipRRect(
           borderRadius: BorderRadius.circular(20.0),
           child: SizedBox(
             height: MediaQuery.of(context).size.height * 0.82,
             child: BarcodeScannerScreen(
               onResult: (result) async {
-                final data =
-                    await searchBarcode(barcode: result.displayValue ?? '');
+                final data = await searchBarcode(barcode: result.displayValue!);
                 if (data != null) {
                   setState(() {
-                    nameController.text = data.$1;
-                    thumbnail = data.$2;
+                    thumbnail = data.$1;
+                    nameController.text = data.$2;
                     carbController.text = data.$3;
                     proteinController.text = data.$4;
                     fatController.text = data.$5;
@@ -187,14 +182,15 @@ class _AddFoodScreenState extends State<AddFoodScreen> {
       isDismissible: false,
       builder: (BuildContext context) {
         return Padding(
-          padding:
-              EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(context).viewInsets.bottom,
+          ),
           child: AddBarcodeDataSheet(
             barcodeId: barcodeId,
             tapAddButton: (name, carb, protein, fat) {
               setState(() {
-                nameController.text = name;
                 thumbnail = null;
+                nameController.text = name;
                 carbController.text = carb;
                 proteinController.text = protein;
                 fatController.text = fat;

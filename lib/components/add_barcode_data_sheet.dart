@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:meal_up/barcode_search_api.dart';
 import 'package:meal_up/components/add_food_text_field.dart';
 import 'package:meal_up/components/nutrition_text_field.dart';
 import 'package:meal_up/constant.dart';
@@ -40,9 +41,9 @@ class _AddBarcodeDataSheetState extends State<AddBarcodeDataSheet> {
       } else {
         isValid = true;
         addBarcodeData = () async {
-          FirebaseService().addData(
+          final api = BarcodeSearchAPI();
+          api.addBarcodeData(
             barcodeId: widget.barcodeId,
-            thumbnail: null,
             name: nameController.text,
             carb: carbController.text,
             protein: proteinController.text,
@@ -152,6 +153,7 @@ class _AddBarcodeDataSheetState extends State<AddBarcodeDataSheet> {
                       ),
                     ],
                   ),
+                  const SizedBox(height: 16.0),
                   NutritionTextField(
                     nutrition: Nutrition.carbohydrate,
                     controller: carbController,

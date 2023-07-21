@@ -41,9 +41,8 @@ class _BarcodeScannerScreenState extends State<BarcodeScannerScreen> {
           inputImage.metadata?.rotation != null) {
         if (barcodes.isNotEmpty) {
           widget.onResult(barcodes[0]);
-          if (mounted) {
-            Navigator.pop(context);
-          }
+          if (!mounted) return;
+          Navigator.pop(context);
         }
       }
     }
