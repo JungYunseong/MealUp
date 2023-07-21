@@ -4,7 +4,7 @@ import '../components/date_picker/date_picker_widget.dart';
 import '../components/intaked_food_box.dart';
 import '../components/target_intake_card.dart';
 import '../constant.dart';
-import '../database_helper.dart';
+import '../intake_database_helper.dart';
 import '../model/food_item.dart';
 import '../model/intakes.dart';
 
@@ -33,7 +33,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Intakes? retrievedIntake;
 
   Future<Intakes?> getIntake(int intakeId) async {
-    final dbHelper = DatabaseHelper.instance;
+    final dbHelper = IntakeDatabaseHelper.instance;
     retrievedIntake = await dbHelper.getIntake(intakeId);
     return retrievedIntake;
   }

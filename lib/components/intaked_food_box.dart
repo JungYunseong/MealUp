@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:meal_up/components/food_row.dart';
-import 'package:meal_up/database_helper.dart';
+import 'package:meal_up/intake_database_helper.dart';
 import 'package:meal_up/model/food_item.dart';
 import 'package:meal_up/screens/add_food_screen.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
@@ -42,7 +42,7 @@ class _IntakedFoodBoxState extends State<IntakedFoodBox> {
   }
 
   Future deleteFood(FoodItem foodItem) async {
-    final dbHelper = DatabaseHelper.instance;
+    final dbHelper = IntakeDatabaseHelper.instance;
     var updateIntake = widget.retrieveIntake;
 
     switch (widget.mealTime) {

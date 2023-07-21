@@ -10,7 +10,7 @@ import 'package:meal_up/model/nutrition.dart';
 import 'package:meal_up/screens/barcode_scanner_screen.dart';
 import 'package:meal_up/screens/search_api.dart';
 import '../constant.dart';
-import '../database_helper.dart';
+import '../intake_database_helper.dart';
 import '../model/intakes.dart';
 
 class AddFoodScreenArguments {
@@ -52,6 +52,7 @@ class AddFoodScreen extends StatefulWidget {
 }
 
 class _AddFoodScreenState extends State<AddFoodScreen> {
+  final dbHelper = IntakeDatabaseHelper.instance;
   bool isLoading = false;
 
   TextEditingController nameController = TextEditingController();
@@ -425,19 +426,5 @@ class _AddFoodScreenState extends State<AddFoodScreen> {
           )
       ],
     );
-  }
-
-  final dbHelper = DatabaseHelper.instance;
-
-// Retrieve all Intakes objects from the database
-  Future<Intakes?> retrieveIntake(int intakeId) async {
-    final retrievedIntakes = await dbHelper.getIntake(intakeId);
-    return retrievedIntakes;
-  }
-
-// Delete an Intakes object from the database
-  void deleteIntake(int intakeId) async {
-    final deletedIntakeId = intakeId;
-    await dbHelper.deleteIntake(deletedIntakeId);
   }
 }

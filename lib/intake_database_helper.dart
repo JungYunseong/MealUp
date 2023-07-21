@@ -1,10 +1,9 @@
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
-
 import 'model/food_item.dart';
 import 'model/intakes.dart';
 
-class DatabaseHelper {
+class IntakeDatabaseHelper {
   static const _databaseName = 'meal_up_intakes.db';
   static const _databaseVersion = 1;
 
@@ -24,8 +23,8 @@ class DatabaseHelper {
   static const columnIntakesId = 'intakes_id';
 
   Database? _database;
-  DatabaseHelper._privateConstructor();
-  static final DatabaseHelper instance = DatabaseHelper._privateConstructor();
+  IntakeDatabaseHelper._privateConstructor();
+  static final IntakeDatabaseHelper instance = IntakeDatabaseHelper._privateConstructor();
 
   Future<Database> get database async {
     _database ??= await _initDatabase();
