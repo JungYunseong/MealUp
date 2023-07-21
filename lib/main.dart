@@ -8,16 +8,8 @@ import 'package:meal_up/screens/tab_screen.dart';
 import 'package:meal_up/screens/onboarding/onboarding_screen.dart';
 import 'package:meal_up/user_information_helper.dart';
 import 'package:provider/provider.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'firebase_options.dart';
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
-
   final providers = [
     ChangeNotifierProvider(create: (_) => Setting()),
   ];

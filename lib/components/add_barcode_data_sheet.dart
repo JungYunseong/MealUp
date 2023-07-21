@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:meal_up/components/add_food_text_field.dart';
 import 'package:meal_up/components/nutrition_text_field.dart';
 import 'package:meal_up/constant.dart';
-import 'package:meal_up/firebase_service.dart';
 import 'package:meal_up/model/nutrition.dart';
 
 class AddBarcodeDataSheet extends StatefulWidget {

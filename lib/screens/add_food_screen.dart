@@ -4,7 +4,6 @@ import 'package:meal_up/components/add_barcode_data_sheet.dart';
 import 'package:meal_up/components/add_food_text_field.dart';
 import 'package:meal_up/components/food_data_row.dart';
 import 'package:meal_up/components/nutrition_text_field.dart';
-import 'package:meal_up/firebase_service.dart';
 import 'package:meal_up/model/food_item.dart';
 import 'package:meal_up/model/nutrition.dart';
 import 'package:meal_up/screens/barcode_scanner_screen.dart';
