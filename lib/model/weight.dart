@@ -1,6 +1,6 @@
 class WeightEntry {
   int? id;
-  String date;
+  int date;
   double weight;
 
   WeightEntry({this.id, required this.date, required this.weight});
@@ -16,8 +16,8 @@ class WeightEntry {
   static WeightEntry fromMap(Map<String, dynamic> map) {
     return WeightEntry(
       id: map['id'],
-      date: map['date'],
-      weight: map['weight'],
+      date: map['date'] as int,
+      weight: map['weight'] as double,
     );
   }
 }

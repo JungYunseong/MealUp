@@ -2,11 +2,17 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:meal_up/model/weight.dart';
+import 'package:meal_up/weight_database_helper.dart';
 
 class RecentProgess extends StatefulWidget {
-  const RecentProgess({super.key, required this.weightList});
+  const RecentProgess({
+    super.key,
+    required this.weightList,
+    required this.onDelete,
+  });
 
   final List<WeightEntry> weightList;
+  final Function() onDelete;
 
   @override
   State<RecentProgess> createState() => _RecentProgessState();
@@ -14,37 +20,41 @@ class RecentProgess extends StatefulWidget {
 
 class _RecentProgessState extends State<RecentProgess> {
   Widget weightRow(WeightEntry item) {
-    return const Column(
+    final date = DateTime.fromMillisecondsSinceEpoch(item.date).toString();
+
+    return Column(
       children: [
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              '오늘',
-              style: TextStyle(
+              date,
+              style: const TextStyle(
                 color: Color(0xFF2D3142),
                 fontSize: 16,
                 fontFamily: 'Noto Sans KR',
                 fontWeight: FontWeight.w400,
-                height: 14,
                 letterSpacing: 0.23,
               ),
             ),
             Text(
-              '50.5',
+              item.weight.toString(),
               textAlign: TextAlign.right,
-              style: TextStyle(
+              style: const TextStyle(
                 color: Color(0xFF2D3142),
-                fontSize: 14,
+                fontSize: 16,
                 fontFamily: 'Rubik',
                 fontWeight: FontWeight.w500,
-                height: 14,
                 letterSpacing: 0.17,
               ),
             )
           ],
         ),
-        Divider(height: 1.0),
+        const SizedBox(height: 20.0),
+        Divider(
+          height: 1.0,
+          color: Colors.black.withOpacity(0.04),
+        ),
       ],
     );
   }
@@ -57,10 +67,12 @@ class _RecentProgessState extends State<RecentProgess> {
           Column(
             children: widget.weightList.map((item) {
               return Slidable(
+                key: UniqueKey(),
                 endActionPane: ActionPane(
                   extentRatio: 0.25,
                   motion: const ScrollMotion(),
                   children: [
+                    const SizedBox(width: 16.0),
                     CupertinoButton(
                       padding: EdgeInsets.zero,
                       child: Container(
@@ -74,15 +86,16 @@ class _RecentProgessState extends State<RecentProgess> {
                           color: Colors.white,
                         ),
                       ),
-                      onPressed: () async {},
+                      onPressed: () {
+                        final dbHelper = WeightDatabaseHelper();
+                        dbHelper.deleteWeightEntry(item.id!);
+                        widget.onDelete();
+                      },
                     ),
                   ],
                 ),
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 28.0,
-                    vertical: 16.0,
-                  ),
+                  padding: const EdgeInsets.fromLTRB(24.0, 24.0, 24.0, 8.0),
                   child: weightRow(item),
                 ),
               );
@@ -90,7 +103,7 @@ class _RecentProgessState extends State<RecentProgess> {
           )
         else
           const Padding(
-            padding: EdgeInsets.symmetric(vertical: 8.0),
+            padding: EdgeInsets.symmetric(vertical: 24.0),
             child: Text(
               '현재 체중을 추가해주세요.',
               style: TextStyle(

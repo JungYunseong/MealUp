@@ -45,6 +45,7 @@ class _TabScreenState extends State<TabScreen> {
       return WillPopScope(
         onWillPop: () async => false,
         child: Scaffold(
+          resizeToAvoidBottomInset: false,
           backgroundColor: secondaryColor,
           body: SafeArea(
             bottom: false,

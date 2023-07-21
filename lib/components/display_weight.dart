@@ -38,7 +38,7 @@ class DisplayWeight extends StatelessWidget {
                 ),
               ),
               const TextSpan(
-                text: 'kg',
+                text: ' kg',
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 14,

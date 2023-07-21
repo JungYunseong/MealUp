@@ -4,7 +4,8 @@ import 'package:path/path.dart';
 import 'model/weight.dart';
 
 class WeightDatabaseHelper {
-  static final WeightDatabaseHelper _instance = WeightDatabaseHelper._internal();
+  static final WeightDatabaseHelper _instance =
+      WeightDatabaseHelper._internal();
 
   factory WeightDatabaseHelper() => _instance;
 
@@ -21,7 +22,7 @@ class WeightDatabaseHelper {
 
   Future<Database> _initDatabase() async {
     String databasesPath = await getDatabasesPath();
-    String path = join(databasesPath, 'weight_database.db');
+    String path = join(databasesPath, 'weight_dataddddase.db');
 
     return await openDatabase(
       path,
@@ -29,8 +30,8 @@ class WeightDatabaseHelper {
       onCreate: (db, version) async {
         await db.execute('''
           CREATE TABLE weight_entries (
-            id INTEGER PRIMARY KEY,
-            date TEXT NOT NULL,
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            date INTEGER NOT NULL,
             weight REAL NOT NULL
           )
         ''');
@@ -43,12 +44,10 @@ class WeightDatabaseHelper {
     return await db.insert('weight_entries', entry.toMap());
   }
 
-  Future<List<WeightEntry>> getWeightEntriesByDate(String date) async {
+  Future<List<WeightEntry>> getWeightEntries() async {
     final db = await database;
     final List<Map<String, dynamic>> maps = await db.query(
       'weight_entries',
-      where: 'date = ?',
-      whereArgs: [date],
     );
     return List.generate(maps.length, (i) {
       return WeightEntry.fromMap(maps[i]);
