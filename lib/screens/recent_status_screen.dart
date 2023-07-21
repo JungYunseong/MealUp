@@ -4,6 +4,7 @@ import 'package:meal_up/components/display_weight.dart';
 import 'package:meal_up/components/weight_chart.dart';
 import 'package:pull_down_button/pull_down_button.dart';
 import '../components/bmi_card.dart';
+import '../components/recent_progess.dart';
 import '../constant.dart';
 
 class RecentStatusScreen extends StatefulWidget {
@@ -140,6 +141,7 @@ class _RecentStatusScreenState extends State<RecentStatusScreen> {
                     letterSpacing: 0.32,
                   ),
                 ),
+                const RecentProgess(weightList: [],),
                 const SizedBox(height: 24.0),
                 SafeArea(
                   child: CupertinoButton(
