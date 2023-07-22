@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:meal_up/model/weight.dart';
+import 'package:meal_up/utils/date_coverter.dart';
 import 'package:meal_up/weight_database_helper.dart';
 
 class RecentProgess extends StatefulWidget {
@@ -20,7 +21,7 @@ class RecentProgess extends StatefulWidget {
 
 class _RecentProgessState extends State<RecentProgess> {
   Widget weightRow(WeightEntry item) {
-    final date = DateTime.fromMillisecondsSinceEpoch(item.date).toString();
+    final relativeDate = converToReleativeDate(item.date);
 
     return Column(
       children: [
@@ -28,7 +29,7 @@ class _RecentProgessState extends State<RecentProgess> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              date,
+              relativeDate,
               style: const TextStyle(
                 color: Color(0xFF2D3142),
                 fontSize: 16,

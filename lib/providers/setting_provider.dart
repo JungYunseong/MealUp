@@ -45,7 +45,7 @@ class Setting extends ChangeNotifier {
     _age = userInfo.age;
     _height = userInfo.height;
     _goalWeight = userInfo.goalWeight;
-    _weight = userInfo.goalWeight;
+    _weight = userInfo.weight;
 
     GoalCalories goalCalories = getCalories(prefs);
     _basalMetabolicRate = goalCalories.basalMetabolicRate;

@@ -1,5 +1,8 @@
 import 'dart:convert';
 
+import 'package:meal_up/model/weight.dart';
+import 'package:meal_up/utils/date_coverter.dart';
+import 'package:meal_up/weight_database_helper.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'model/goal_calories.dart';
@@ -8,6 +11,7 @@ import 'model/user_information.dart';
 
 class UIHelper {
   static late SharedPreferences prefs;
+  final dbHelper = WeightDatabaseHelper();
 
   Future init() async {
     prefs = await SharedPreferences.getInstance();
@@ -71,6 +75,12 @@ class UIHelper {
       weight: getWeight,
     );
 
+    if (getWeight != null) {
+      dbHelper.insertWeightEntry(WeightEntry(
+        date: dateTimeToInt(DateTime.now()),
+        weight: getWeight.toDouble(),
+      ));
+    }
     prefs.setString('UserInformation', json.encode(information.toJson()));
   }
 

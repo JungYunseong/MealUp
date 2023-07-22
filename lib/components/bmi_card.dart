@@ -1,12 +1,27 @@
 import 'package:flutter/material.dart';
+import 'package:meal_up/providers/setting_provider.dart';
+import 'package:meal_up/utils/bmi_calculater.dart';
+import 'package:provider/provider.dart';
 
-class BMICard extends StatelessWidget {
-  const BMICard({super.key, required this.bmi});
+class BMICard extends StatefulWidget {
+  const BMICard({super.key, required this.currentWeight});
 
-  final int bmi;
+  final double currentWeight;
+
+  @override
+  State<BMICard> createState() => _BMICardState();
+}
+
+class _BMICardState extends State<BMICard> {
+  int bmi = 20;
 
   @override
   Widget build(BuildContext context) {
+    bmi = calculateBMI(
+      height: context.watch<Setting>().height!,
+      weight: widget.currentWeight,
+    ).round();
+
     return Container(
       padding: const EdgeInsets.all(20.0),
       decoration: ShapeDecoration(
@@ -21,7 +36,7 @@ class BMICard extends StatelessWidget {
         children: [
           Container(
             decoration: ShapeDecoration(
-              color: const Color(0xFFFF9B90),
+              color: getBMIBackgroundColor(bmi),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
@@ -31,10 +46,10 @@ class BMICard extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  const Text(
+                  Text(
                     'BMI',
                     style: TextStyle(
-                      color: Colors.white,
+                      color: getBMIForegroundColor(bmi),
                       fontSize: 12,
                       fontFamily: 'Rubik',
                       fontWeight: FontWeight.w400,
@@ -44,9 +59,9 @@ class BMICard extends StatelessWidget {
                   ),
                   const SizedBox(height: 6.0),
                   Text(
-                    bmi.toString(),
-                    style: const TextStyle(
-                      color: Colors.white,
+                    bmi.round().toString(),
+                    style: TextStyle(
+                      color: getBMIForegroundColor(bmi),
                       fontSize: 20,
                       fontFamily: 'Rubik',
                       fontWeight: FontWeight.w500,
@@ -59,12 +74,15 @@ class BMICard extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 16.0),
-          const Text(
-            'Your weight is under normal.\nSuggested range is 80-90kg',
-            style: TextStyle(
+          Text(
+            getBMIDescription(
+              height: context.watch<Setting>().height!,
+              weight: widget.currentWeight,
+            ),
+            style: const TextStyle(
               color: Color(0xFF4C5980),
               fontSize: 14,
-              fontFamily: 'Rubik',
+              fontFamily: 'Noto Sans KR',
               fontWeight: FontWeight.w400,
               letterSpacing: 0.20,
             ),

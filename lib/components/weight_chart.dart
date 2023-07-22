@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:meal_up/constant.dart';
 
 class WeightChart extends StatefulWidget {
-  const WeightChart({super.key});
+  const WeightChart({super.key, required this.graphType});
+
+  final String graphType;
 
   @override
   State<WeightChart> createState() => _WeightChartState();

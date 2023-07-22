@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:meal_up/components/display_weight.dart';
 import 'package:meal_up/components/weight_chart.dart';
 import 'package:meal_up/model/weight.dart';
+import 'package:meal_up/utils/date_coverter.dart';
 import 'package:meal_up/weight_database_helper.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_down_button/pull_down_button.dart';
@@ -61,7 +62,7 @@ class _RecentStatusScreenState extends State<RecentStatusScreen> {
                   onPressed: () {
                     dbHelper.insertWeightEntry(
                       WeightEntry(
-                        date: DateTime.now().millisecondsSinceEpoch,
+                        date: dateTimeToInt(DateTime.now()),
                         weight: double.parse(weightController.text),
                       ),
                     );
@@ -93,7 +94,9 @@ class _RecentStatusScreenState extends State<RecentStatusScreen> {
           children: [
             DisplayWeight(
               label: '현재',
-              weight: weightList.isEmpty ? 00 : weightList.last.weight.round(),
+              weight: weightList.isEmpty
+                  ? context.watch<Setting>().weight!
+                  : weightList.last.weight.round(),
             ),
             Image.asset(
               'assets/icons/weight.png',
@@ -196,9 +199,13 @@ class _RecentStatusScreenState extends State<RecentStatusScreen> {
                         ],
                       ),
                       const SizedBox(height: 24.0),
-                      const WeightChart(),
+                      WeightChart(graphType: graphType),
                       const SizedBox(height: 40.0),
-                      const BMICard(bmi: 25),
+                      BMICard(
+                        currentWeight: weightList.isEmpty
+                            ? (context.watch<Setting>().weight!).toDouble()
+                            : weightList.last.weight,
+                      ),
                       const SizedBox(height: 56.0),
                       const Row(
                         children: [
