@@ -63,10 +63,10 @@ var carouselCardTitle = const TextStyle(
   fontFamily: 'Noto Sans KR',
 );
 var carouselCardContents = const TextStyle(
-  fontSize: 14.0,
+  fontSize: 13.0,
   fontWeight: FontWeight.w400,
   color: Color(0xFF4C5980),
-  fontFamily: 'Rubik',
+  fontFamily: 'Noto Sans KR',
 );
 var navTitle = const TextStyle(
   fontSize: 16.0,

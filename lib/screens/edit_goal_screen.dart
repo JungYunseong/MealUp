@@ -171,15 +171,18 @@ class _EditGoalScreenState extends State<EditGoalScreen> {
                   isEditScreen: true,
                 ),
                 const Spacer(),
-                CupertinoButton(
-                  color: primaryColor,
-                  borderRadius: BorderRadius.circular(16.0),
-                  onPressed: () {
-                    editGoal(context);
-                  },
-                  child: Text(
-                    '목표 수정하기',
-                    style: buttonText,
+                Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: CupertinoButton(
+                    color: primaryColor,
+                    borderRadius: BorderRadius.circular(16.0),
+                    onPressed: () {
+                      editGoal(context);
+                    },
+                    child: Text(
+                      '목표 수정하기',
+                      style: buttonText,
+                    ),
                   ),
                 ),
               ],

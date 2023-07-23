@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:meal_up/utils/date_coverter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../model/gender.dart';
 import '../model/goal_calories.dart';
@@ -19,6 +20,8 @@ class Setting extends ChangeNotifier {
   int? _goalProtein;
   int? _goalCarbohydrate;
 
+  DateTime? _installDate;
+
   Gender? get gender => _gender;
   int? get level => _level;
   int? get age => _age;
@@ -31,6 +34,8 @@ class Setting extends ChangeNotifier {
   int? get goalFat => _goalFat;
   int? get goalProtein => _goalProtein;
   int? get goalCarbohydrate => _goalCarbohydrate;
+
+  DateTime? get installDate => _installDate;
 
   Future<void> getSettingValue() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -55,6 +60,8 @@ class Setting extends ChangeNotifier {
     _goalProtein = goalCalories.goalProtein;
     _goalCarbohydrate = goalCalories.goalCarbohydrate;
 
+    _installDate = getInstallDate(prefs);
+
     notifyListeners();
   }
 
@@ -64,6 +71,13 @@ class Setting extends ChangeNotifier {
     );
 
     return userInformation;
+  }
+
+  DateTime getInstallDate(SharedPreferences prefs) {
+    final installDateInt = prefs.getInt('InstallDate');
+    final installDate = intToDateTime(installDateInt!);
+
+    return installDate;
   }
 
   GoalCalories getCalories(SharedPreferences prefs) {

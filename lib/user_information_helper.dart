@@ -26,14 +26,9 @@ class UIHelper {
     int? weight,
   }) async {
     UserInformation userInformation = UserInformation();
-    Set<String> keys = prefs.getKeys();
-    for (String key in keys) {
-      UserInformation information = UserInformation.fromJson(
-        jsonDecode(prefs.getString(key) ?? ''),
-      );
-
-      userInformation = information;
-    }
+    userInformation = UserInformation.fromJson(
+      jsonDecode(prefs.getString('UserInformation') ?? ''),
+    );
 
     int? getAge = userInformation.age;
     String? getGender = userInformation.gender;
@@ -83,6 +78,10 @@ class UIHelper {
       ));
     }
     prefs.setString('UserInformation', json.encode(information.toJson()));
+    final installDate = prefs.getInt('InstallDate');
+    if (installDate == null) {
+      prefs.setInt('InstallDate', dateTimeToInt(DateTime.now()));
+    }
   }
 
   UserInformation getInformation() {

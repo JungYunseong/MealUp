@@ -83,7 +83,7 @@ class SelectActivityLevelScreen extends StatelessWidget {
                     alignment: Alignment.center,
                     child: CarouselSlider.builder(
                       options: CarouselOptions(
-                        height: 455.0,
+                        height: 400.0,
                         enlargeCenterPage: true,
                         enlargeFactor: 0.2,
                         viewportFraction: 0.75,

@@ -58,7 +58,7 @@ class ActivityLevelCard extends StatelessWidget {
               children: [
                 Image.asset(
                   activityLevel.image,
-                  height: 150.0,
+                  height: 120.0,
                   fit: BoxFit.fitHeight,
                 ),
                 const Spacer(),

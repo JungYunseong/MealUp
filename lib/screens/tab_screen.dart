@@ -4,7 +4,6 @@ import 'package:meal_up/screens/recent_status_screen.dart';
 import 'package:provider/provider.dart';
 import '../components/bottom_navigation_bar/bottom_navigation_bar.dart';
 import '../providers/setting_provider.dart';
-import '../utils/app_install_date.dart';
 import 'home_screen.dart';
 
 class TabScreen extends StatefulWidget {
@@ -25,12 +24,10 @@ class _TabScreenState extends State<TabScreen> {
 
   @override
   void initState() {
-    AppInstallDate().installDate.then((DateTime dateTime) {
-      context.read<Setting>().getSettingValue().then((_) {
-        setState(() {
-          installDate = dateTime;
-          isLoading = false;
-        });
+    context.read<Setting>().getSettingValue().then((_) {
+      setState(() {
+        installDate = context.read<Setting>().installDate!;
+        isLoading = false;
       });
     });
 
@@ -40,7 +37,7 @@ class _TabScreenState extends State<TabScreen> {
   @override
   Widget build(BuildContext context) {
     if (isLoading) {
-      return const CircularProgressIndicator();
+      return Container(color: Colors.white);
     } else {
       return WillPopScope(
         onWillPop: () async => false,
