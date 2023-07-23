@@ -51,6 +51,7 @@ dependencies:
   flutter_slidable: ^3.0.0
   fl_chart: ^0.63.0
   pull_down_button: ^0.9.2
+  mixpanel_flutter: ^2.0.0
 
 dev_dependencies:
   flutter_test:

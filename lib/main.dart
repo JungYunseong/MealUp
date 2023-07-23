@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:meal_up/constant.dart';
 import 'package:meal_up/providers/setting_provider.dart';
 import 'package:meal_up/routes.dart';
@@ -7,9 +8,18 @@ import 'package:meal_up/screens/edit_goal_screen.dart';
 import 'package:meal_up/screens/tab_screen.dart';
 import 'package:meal_up/screens/onboarding/onboarding_screen.dart';
 import 'package:meal_up/user_information_helper.dart';
+import 'package:mixpanel_flutter/mixpanel_flutter.dart';
 import 'package:provider/provider.dart';
 
 void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
+  ]);
+  await Mixpanel.init('9450e6a9ab0a7303debac809ddf7f58f',
+      trackAutomaticEvents: true);
+
   final providers = [
     ChangeNotifierProvider(create: (_) => Setting()),
   ];
