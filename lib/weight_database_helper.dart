@@ -30,7 +30,7 @@ class WeightDatabaseHelper {
       onCreate: (db, version) async {
         await db.execute('''
           CREATE TABLE weight_entries (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            id INTEGER PRIMARY KEY,
             date INTEGER NOT NULL,
             weight REAL NOT NULL
           )
@@ -52,6 +52,19 @@ class WeightDatabaseHelper {
     return List.generate(maps.length, (i) {
       return WeightEntry.fromMap(maps[i]);
     });
+  }
+
+  Future<bool> hasWeightEntry(int id) async {
+    final db = await database;
+    final weights = await db.query(
+      'weight_entries',
+      where: 'id = ?',
+      whereArgs: [id],
+    );
+
+    if (weights.isEmpty) return false;
+
+    return true;
   }
 
   Future<int> updateWeightEntry(WeightEntry entry) async {

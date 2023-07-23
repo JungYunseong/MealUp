@@ -77,6 +77,7 @@ class UIHelper {
 
     if (getWeight != null) {
       dbHelper.insertWeightEntry(WeightEntry(
+        id: dateTimeToInt(DateTime.now()),
         date: dateTimeToInt(DateTime.now()),
         weight: getWeight.toDouble(),
       ));

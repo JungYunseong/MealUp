@@ -1,17 +1,28 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:meal_up/constant.dart';
+import 'package:meal_up/model/weight.dart';
+import 'package:meal_up/utils/chart_calculater.dart';
 
 class WeightChart extends StatefulWidget {
-  const WeightChart({super.key, required this.graphType});
+  const WeightChart({
+    super.key,
+    required this.installDate,
+    required this.chartType,
+    required this.weightList,
+  });
 
-  final String graphType;
+  final DateTime installDate;
+  final String chartType;
+  final List<WeightEntry> weightList;
 
   @override
   State<WeightChart> createState() => _WeightChartState();
 }
 
 class _WeightChartState extends State<WeightChart> {
+  double xInterval = 86400000;
+
   @override
   Widget build(BuildContext context) {
     return Stack(
@@ -34,20 +45,11 @@ class _WeightChartState extends State<WeightChart> {
       fontWeight: FontWeight.w400,
     );
     Widget text;
-    switch (value.toInt()) {
-      case 2:
-        text = const Text('20', style: style);
-        break;
-      case 5:
-        text = const Text('22', style: style);
-        break;
-      case 8:
-        text = const Text('24/03', style: style);
-        break;
-      default:
-        text = const Text('', style: style);
-        break;
-    }
+    text = converXtoLabel(
+        chartType: widget.chartType,
+        list: widget.weightList,
+        value: value,
+        style: style);
 
     return SideTitleWidget(
       axisSide: meta.axisSide,
@@ -63,24 +65,15 @@ class _WeightChartState extends State<WeightChart> {
       fontWeight: FontWeight.w400,
     );
     String text;
-    switch (value.toInt()) {
-      case 40:
-        text = '    40';
-        break;
-      case 50:
-        text = '    50';
-        break;
-      case 60:
-        text = '    60';
-        break;
-      case 70:
-        text = '    70';
-        break;
-      default:
-        return Container();
-    }
+    text = converYtoLabel(value: value, style: style);
 
     return Text(text, style: style, textAlign: TextAlign.left);
+  }
+
+  List<FlSpot> spots() {
+    return widget.weightList.map((data) {
+      return FlSpot(data.date.toDouble(), data.weight.toDouble());
+    }).toList();
   }
 
   LineChartData mainData() {
@@ -88,8 +81,7 @@ class _WeightChartState extends State<WeightChart> {
       gridData: FlGridData(
         show: true,
         drawVerticalLine: false,
-        horizontalInterval: 10,
-        verticalInterval: 1,
+        horizontalInterval: getYInterval(widget.weightList),
         getDrawingHorizontalLine: (value) {
           return const FlLine(
             color: Color(0xFFD0D0D0),
@@ -109,14 +101,14 @@ class _WeightChartState extends State<WeightChart> {
           sideTitles: SideTitles(
             showTitles: true,
             reservedSize: 30,
-            interval: 1,
+            interval: 10800000,
             getTitlesWidget: bottomTitleWidgets,
           ),
         ),
         rightTitles: AxisTitles(
           sideTitles: SideTitles(
             showTitles: true,
-            interval: 10,
+            interval: getYInterval(widget.weightList),
             getTitlesWidget: rightTitleWidgets,
             reservedSize: 42,
           ),
@@ -128,21 +120,13 @@ class _WeightChartState extends State<WeightChart> {
           bottom: BorderSide(color: Color(0xFFD0D0D0), width: 1.0),
         ),
       ),
-      minX: 0,
-      maxX: 11,
-      minY: 40,
-      maxY: 70,
+      minX: getMinX(chartType: widget.chartType, list: widget.weightList),
+      maxX: getMaxX(widget.weightList),
+      minY: getMinY(widget.weightList),
+      maxY: getMaxY(widget.weightList),
       lineBarsData: [
         LineChartBarData(
-          spots: const [
-            FlSpot(0, 68),
-            FlSpot(2.6, 64),
-            FlSpot(4.9, 55),
-            FlSpot(6.8, 57),
-            FlSpot(8, 62),
-            FlSpot(9.5, 58),
-            FlSpot(11, 60),
-          ],
+          spots: spots(),
           isCurved: true,
           color: const Color(0xFFAF8EFF),
           barWidth: 4,
@@ -181,11 +165,11 @@ class _WeightChartState extends State<WeightChart> {
           getTooltipItems: (touchedSpots) {
             return touchedSpots.map((e) {
               return LineTooltipItem(
-                'APR 4  |  ${e.y} kg',
+                '${converXtoString(chartType: widget.chartType, x: e.x.toInt())} |  ${e.y} kg',
                 const TextStyle(
                   color: Colors.white,
                   fontSize: 12,
-                  fontFamily: 'Rubik',
+                  fontFamily: 'Noto Sans KR',
                   fontWeight: FontWeight.w500,
                 ),
               );

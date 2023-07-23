@@ -52,7 +52,8 @@ class _TabScreenState extends State<TabScreen> {
             child: Stack(
               children: [
                 if (selectedTab == 0) HomeScreen(installDate: installDate),
-                if (selectedTab == 1) const RecentStatusScreen(),
+                if (selectedTab == 1)
+                  RecentStatusScreen(installDate: installDate),
                 Align(
                   alignment: Alignment.bottomCenter,
                   child: CurvedNavigationBar(
