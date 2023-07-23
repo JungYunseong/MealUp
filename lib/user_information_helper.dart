@@ -27,7 +27,7 @@ class UIHelper {
   }) async {
     UserInformation userInformation = UserInformation();
     userInformation = UserInformation.fromJson(
-      jsonDecode(prefs.getString('UserInformation') ?? ''),
+      jsonDecode(prefs.getString('UserInformation') ?? '{}'),
     );
 
     int? getAge = userInformation.age;
